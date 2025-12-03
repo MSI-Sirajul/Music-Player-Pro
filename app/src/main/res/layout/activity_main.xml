@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_surface">
+
+    <!-- Material 3 Header -->
+    <RelativeLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Music Library"
+            android:textSize="28sp"
+            android:textColor="@color/md_theme_onSurface"
+            android:textStyle="bold"
+            android:layout_centerVertical="true"/>
+
+        <!-- Return to Player Button -->
+        <ImageButton
+            android:id="@+id/btnNowPlaying"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_play"
+            android:background="@drawable/btn_tonal_rounded"
+            android:padding="12dp"
+            android:scaleType="fitCenter"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:visibility="gone"
+            android:elevation="4dp"/>
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/songListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/headerLayout"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="12dp"
+        android:padding="16dp"
+        android:clipToPadding="false"
+        android:scrollbarStyle="outsideOverlay"/>
+</RelativeLayout>

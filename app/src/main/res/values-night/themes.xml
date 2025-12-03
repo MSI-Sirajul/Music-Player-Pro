@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme" parent="android:Theme.DeviceDefault.NoActionBar">
+        <!-- Main Background Color -->
+        <item name="android:windowBackground">@color/md_theme_background</item>
+        
+        <!-- Text Color -->
+        <item name="android:textColor">@color/md_theme_onSurface</item>
+        <item name="android:textColorPrimary">@color/md_theme_onSurface</item>
+        <item name="android:textColorSecondary">@color/md_theme_onSurfaceVariant</item>
+
+        <!-- Status Bar Color -->
+        <item name="android:statusBarColor">@color/md_theme_background</item>
+        <item name="android:windowLightStatusBar">false</item> <!-- আইকনগুলো সাদা হবে -->
+        
+        <!-- Navigation Bar Color -->
+        <item name="android:navigationBarColor">@color/md_theme_background</item>
+    </style>
+
+</resources>
