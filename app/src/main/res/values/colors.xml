@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Material 3 Light Theme Colors -->
+    <color name="md_theme_primary">#6750A4</color>
+    <color name="md_theme_onPrimary">#FFFFFF</color>
+    <color name="md_theme_background">#FDFDFD</color> <!-- Almost White -->
+    <color name="md_theme_surface">#FDFDFD</color>
+    <color name="md_theme_onSurface">#1C1B1F</color> <!-- Black Text -->
+    <color name="md_theme_onSurfaceVariant">#49454F</color> <!-- Dark Gray Text -->
+    <!-- Light Mode: 15% Opacity of Primary Color -->
+    <color name="tab_bg_selected">#256750A4</color>
+    <!-- Light Mode Menu BG (90% Opacity White/Grey) -->
+    <color name="popup_bg">#E6F5F5F5</color>
+    <!-- Custom Colors for Fixes -->
+    <color name="text_secondary">#757575</color> <!-- Folder Name Gray -->
+    <color name="popup_bg_2">#F0F0F0</color> <!-- Light Menu BG (Slightly gray) -->
+    <color name="button_bg_tint">#15000000</color> <!-- 10% Black tint for buttons -->
+    <color name="footer_text_base">#90000000</color> <!-- Semi-transparent Black -->
+    <color name="list_item_bg">#FFFFFF</color>
+</resources>

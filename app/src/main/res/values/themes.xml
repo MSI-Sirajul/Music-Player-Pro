@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Base application theme -->
+    <style name="AppTheme" parent="android:Theme.DeviceDefault.Light.NoActionBar">
+        <!-- Main Background Color -->
+        <item name="android:windowBackground">@color/md_theme_background</item>
+        
+        <!-- Text Color -->
+        <item name="android:textColor">@color/md_theme_onSurface</item>
+        <item name="android:textColorPrimary">@color/md_theme_onSurface</item>
+        <item name="android:textColorSecondary">@color/md_theme_onSurfaceVariant</item>
+
+        <!-- Status Bar Color (API 21+) -->
+        <!-- পুরনো ভার্সনে এগুলো ইগনোর করবে, তাই ক্রাশ করবে না -->
+        <item name="android:statusBarColor">@color/md_theme_background</item>
+        <item name="android:windowLightStatusBar">true</item> <!-- আইকনগুলো কালো হবে -->
+        
+        <!-- Navigation Bar Color (API 21+) -->
+        <item name="android:navigationBarColor">@color/md_theme_background</item>
+    </style>
+
+</resources>

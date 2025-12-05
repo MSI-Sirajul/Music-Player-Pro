@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_surface"
+    android:animateLayoutChanges="true">
+
+    <!-- 1. HEADER -->
+    <RelativeLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp">
+
+        <!-- Left Container: Back Button + Title -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/btnMenu">
+
+            <!-- Back Button (Hidden by default, shown ONLY in Folder) -->
+            <ImageButton
+                android:id="@+id/btnBackHeader"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:src="@drawable/ic_back"
+                android:background="@drawable/bg_button_rounded"
+                android:padding="6dp"
+                android:scaleType="fitCenter"
+                android:visibility="gone"
+                android:layout_marginRight="8dp"
+                android:tint="@color/md_theme_onSurface"/>
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/tvHeaderTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Music Player Pro"
+                android:textSize="22sp"
+                android:textColor="@color/md_theme_onSurface"
+                android:textStyle="bold"
+                android:singleLine="true"
+                android:ellipsize="end"/>
+        </LinearLayout>
+
+        <!-- Menu Button (Right Side) -->
+        <ImageButton
+            android:id="@+id/btnMenu"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:src="@drawable/ic_menu"
+            android:background="@drawable/bg_button_rounded"
+            android:padding="6dp"
+            android:scaleType="fitCenter"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:tint="@color/md_theme_onSurface"/>
+    </RelativeLayout>
+
+    <!-- 2. TABS -->
+    <LinearLayout
+        android:id="@+id/tabContainer"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_below="@id/headerLayout"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:weightSum="3">
+
+        <TextView
+            android:id="@+id/tabTracks"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="All Music"
+            android:gravity="center"
+            android:textColor="@color/md_theme_onSurface"
+            android:textStyle="bold"
+            android:background="@drawable/tab_selector"
+            android:clickable="true"/>
+
+        <TextView
+            android:id="@+id/tabFolders"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Folders"
+            android:gravity="center"
+            android:textColor="@color/md_theme_onSurface"
+            android:background="@drawable/tab_selector"
+            android:clickable="true"/>
+
+        <TextView
+            android:id="@+id/tabFavorites"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Favorites"
+            android:gravity="center"
+            android:textColor="@color/md_theme_onSurface"
+            android:background="@drawable/tab_selector"
+            android:clickable="true"/>
+    </LinearLayout>
+
+    <!-- 3. SEARCH BAR -->
+    <RelativeLayout
+        android:id="@+id/searchContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tabContainer"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/item_card_bg">
+
+            <ImageView
+                android:id="@+id/searchIconView"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:src="@drawable/ic_search"
+                android:background="@drawable/bg_menu_popup"
+                android:padding="5dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:tint="@color/text_secondary"/>
+
+            <EditText
+                android:id="@+id/etSearch"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_toLeftOf="@id/searchIconView"
+                android:background="@android:color/transparent"
+                android:paddingHorizontal="12dp"
+                android:hint="Search song or folder..."
+                android:textColor="@color/md_theme_onSurface"
+                android:textColorHint="@color/text_secondary"
+                android:textSize="14sp"
+                android:singleLine="true"
+                android:imeOptions="actionDone"/>
+        </RelativeLayout>
+    </RelativeLayout>
+
+    <!-- 4. MINI PLAYER -->
+    <RelativeLayout
+        android:id="@+id/miniPlayerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/item_card_bg"
+        android:padding="6dp"
+        android:layout_margin="8dp"
+        android:elevation="10dp"
+        android:visibility="gone"
+        android:clickable="true">
+
+        <ImageView
+            android:id="@+id/mini_art"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_current_play"
+            android:layout_centerVertical="true"
+            android:scaleType="centerCrop"
+            android:background="@drawable/item_card_bg"
+            android:clipToOutline="true"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/mini_art"
+            android:layout_toLeftOf="@+id/controls_mini"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/mini_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Song Title"
+                android:textColor="@color/md_theme_onSurface"
+                android:textStyle="bold"
+                android:textSize="13sp"
+                android:singleLine="true"/>
+
+            <TextView
+                android:id="@+id/mini_artist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Artist"
+                android:textColor="@color/text_secondary"
+                android:textSize="11sp"
+                android:singleLine="true"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/controls_mini"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/mini_play"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_play"
+                android:background="@drawable/bg_button_rounded"
+                android:padding="6dp"
+                android:scaleType="fitCenter"
+                android:tint="@color/md_theme_primary"/>
+
+            <ImageButton
+                android:id="@+id/mini_next"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginLeft="6dp"
+                android:src="@drawable/ic_next"
+                android:background="@drawable/bg_button_rounded"
+                android:padding="6dp"
+                android:scaleType="fitCenter"
+                android:tint="@color/md_theme_onSurface"/>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <!-- 5. LIST VIEW -->
+    <ListView
+        android:id="@+id/songListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/searchContainer"
+        android:layout_above="@id/miniPlayerLayout"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="3dp"
+        android:paddingHorizontal="8dp"
+        android:clipToPadding="false"
+        android:scrollbarStyle="outsideOverlay"/>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:indeterminate="true"
+        android:visibility="gone"/>
+
+</RelativeLayout>

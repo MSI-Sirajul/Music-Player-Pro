@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_menu_popup"
+    android:padding="24dp"
+    android:gravity="center">
+
+    <!-- Developer Name -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="MD Sirajul Islam"
+        android:textColor="@color/md_theme_onSurface"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="center"/>
+
+    <!-- Username -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@MSI-Sirajul"
+        android:textColor="@color/md_theme_primary"
+        android:textSize="14sp"
+        android:layout_marginTop="4dp"
+        android:gravity="center"/>
+
+    <!-- App Version -->
+    <TextView
+        android:id="@+id/tvVersion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Version 1.0.0"
+        android:textColor="@color/text_secondary"
+        android:textSize="12sp"
+        android:layout_marginTop="2dp"/>
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="#20808080"
+        android:layout_marginVertical="16dp"/>
+
+    <!-- Social Icons Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingTop="4dp">
+
+        <!-- Website -->
+        <ImageButton
+            android:id="@+id/btnWeb"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:src="@drawable/ic_web"
+            android:background="@drawable/bg_button_rounded"
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:tint="@color/md_theme_onSurface"
+            android:layout_marginEnd="16dp"/>
+
+        <!-- Telegram -->
+        <ImageButton
+            android:id="@+id/btnTelegram"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:src="@drawable/ic_telegram"
+            android:background="@drawable/bg_button_rounded"
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:tint="#0088cc" 
+            android:layout_marginEnd="16dp"/>
+
+        <!-- GitHub -->
+        <ImageButton
+            android:id="@+id/btnGithub"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:src="@drawable/ic_github"
+            android:background="@drawable/bg_button_rounded"
+            android:padding="8dp"
+            android:scaleType="fitCenter"/>
+
+    </LinearLayout>
+
+    <!-- Close Button -->
+    <Button
+        android:id="@+id/btnCloseAbout"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:layout_marginTop="20dp"
+        android:text="Close"
+        android:textColor="#FF5555"
+        android:background="@drawable/bg_menu_popup"
+        android:textStyle="bold"/>
+
+</LinearLayout>

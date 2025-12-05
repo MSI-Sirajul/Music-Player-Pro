@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:background="@android:color/transparent"
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
+
+    <!-- Album Art -->
+    <ImageView
+        android:id="@+id/notif_album_art"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="4dp"
+        android:src="@drawable/ic_notification"
+        android:scaleType="centerCrop"
+        android:background="@drawable/item_card_bg"/>
+
+    <!-- Content Container -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="8dp"
+        android:gravity="center_vertical">
+
+        <!-- Song Info -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+            
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/notif_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Song Title"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:singleLine="true"
+                    android:ellipsize="marquee"/>
+
+                <TextView
+                    android:id="@+id/notif_artist"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Artist Name"
+                    android:textColor="#B0B0B0"
+                    android:textSize="12sp"
+                    android:singleLine="true"/>
+            </LinearLayout>
+            
+            <!-- Close Button -->
+            <ImageButton
+                android:id="@+id/notif_close"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginStart="8dp"
+                android:src="@drawable/ic_close"
+                android:background="@android:color/transparent"
+                android:scaleType="fitCenter"
+                android:padding="4dp"
+                android:tint="#808080"/>
+        </LinearLayout>
+
+        <!-- Controls Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical|left"
+            android:layout_marginTop="4dp">
+
+            <!-- Favorite -->
+            <ImageButton
+                android:id="@+id/notif_fav"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_heart_empty"
+                android:padding="4dp"
+                android:scaleType="fitCenter"
+                android:tint="#FFFFFF"/>
+
+            <!-- Prev -->
+            <ImageButton
+                android:id="@+id/notif_prev"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginStart="12dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_prev"
+                android:padding="4dp"
+                android:scaleType="fitCenter"
+                android:tint="#FFFFFF"/>
+
+            <!-- Play/Pause -->
+            <ImageButton
+                android:id="@+id/notif_play"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginStart="12dp"
+                android:background="@drawable/btn_primary_circle"
+                android:src="@drawable/ic_play"
+                android:padding="8dp"
+                android:scaleType="fitCenter"
+                android:tint="#FFFFFF"/>
+
+            <!-- Next -->
+            <ImageButton
+                android:id="@+id/notif_next"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginStart="12dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_next"
+                android:padding="4dp"
+                android:scaleType="fitCenter"
+                android:tint="#FFFFFF"/>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
