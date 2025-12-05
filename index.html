@@ -37,6 +37,7 @@
             background-color: var(--md-sys-color-background);
             color: var(--md-sys-color-on-surface);
             overflow-x: hidden;
+            scroll-behavior: smooth;
         }
 
         /* --- Scrollbar --- */
@@ -54,8 +55,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(18, 18, 18, 0.8);
-            backdrop-filter: blur(10px);
+            background: rgba(18, 18, 18, 0.85);
+            backdrop-filter: blur(12px);
             z-index: 1000;
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
@@ -67,6 +68,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            text-decoration: none;
         }
 
         .nav-links a {
@@ -88,13 +90,16 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            font-size: 0.9rem;
             transition: all var(--transition-speed);
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
         .btn-github:hover {
             background-color: var(--md-sys-color-primary);
             color: var(--md-sys-color-on-primary);
             transform: translateY(-2px);
+            border-color: transparent;
         }
 
         /* --- Hero Section --- */
@@ -103,9 +108,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 100px 5%;
+            padding: 120px 5% 80px;
             text-align: center;
-            background: radial-gradient(circle at 50% 50%, rgba(79, 55, 139, 0.15) 0%, rgba(18, 18, 18, 1) 70%);
+            background: radial-gradient(circle at 50% 40%, rgba(79, 55, 139, 0.15) 0%, rgba(18, 18, 18, 1) 60%);
         }
 
         .hero-content {
@@ -117,7 +122,7 @@
             font-size: 3.5rem;
             line-height: 1.2;
             margin-bottom: 20px;
-            background: linear-gradient(45deg, var(--md-sys-color-primary), var(--md-sys-color-secondary));
+            background: linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -126,13 +131,9 @@
             font-size: 1.2rem;
             color: var(--md-sys-color-on-surface-variant);
             margin-bottom: 40px;
-        }
-
-        .cta-group {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .btn-primary {
@@ -143,9 +144,9 @@
             text-decoration: none;
             font-weight: 600;
             font-size: 1.1rem;
-            box-shadow: 0 4px 20px rgba(208, 188, 255, 0.3);
+            box-shadow: 0 4px 20px rgba(208, 188, 255, 0.25);
             transition: all var(--transition-speed);
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 10px;
         }
@@ -153,13 +154,13 @@
         .btn-primary:hover {
             background-color: var(--md-sys-color-primary-container);
             color: var(--md-sys-color-on-primary-container);
-            transform: translateY(-3px) scale(1.05);
+            transform: translateY(-3px) scale(1.02);
             box-shadow: 0 8px 25px rgba(208, 188, 255, 0.4);
         }
 
         /* --- Features --- */
         .section {
-            padding: 80px 5%;
+            padding: 100px 5%;
         }
 
         .section-title {
@@ -167,6 +168,9 @@
             font-size: 2.5rem;
             margin-bottom: 60px;
             color: var(--md-sys-color-on-surface);
+            position: relative;
+            display: inline-block;
+            width: 100%;
         }
 
         .feature-grid {
@@ -179,118 +183,142 @@
             background-color: var(--md-sys-color-surface-variant);
             padding: 30px;
             border-radius: var(--border-radius-lg);
-            transition: transform 0.3s;
-            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.03);
         }
 
         .card:hover {
             transform: translateY(-10px);
-            background-color: var(--md-sys-color-surface);
-            border-color: var(--md-sys-color-primary);
+            background-color: #363636;
+            border-color: rgba(208, 188, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
         .card-icon {
             font-size: 2rem;
             margin-bottom: 20px;
+            display: inline-block;
+            background: rgba(208, 188, 255, 0.1);
+            padding: 15px;
+            border-radius: 50%;
             color: var(--md-sys-color-primary);
         }
 
         .card h3 {
             margin-bottom: 10px;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
+            font-weight: 500;
         }
 
         .card p {
             color: var(--md-sys-color-on-surface-variant);
             line-height: 1.6;
+            font-size: 0.95rem;
         }
 
         /* --- UI Gallery --- */
         .gallery-container {
             display: flex;
-            gap: 20px;
+            gap: 30px;
             overflow-x: auto;
-            padding: 20px 0;
+            padding: 40px 10px;
             justify-content: center;
             flex-wrap: wrap;
         }
 
         .app-mockup {
             width: 280px;
-            height: 580px;
+            height: 600px;
             background-color: #000;
             border-radius: 40px;
-            border: 8px solid #333;
+            border: 8px solid #2d2d2d;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            transition: transform 0.4s;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            transition: transform 0.4s ease;
         }
 
         .app-mockup:hover {
-            transform: scale(1.05);
+            transform: scale(1.05) translateY(-10px);
             z-index: 10;
+            border-color: #444;
         }
 
         .app-mockup img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            display: block;
         }
 
         /* --- Blueprint / Technical --- */
         .blueprint-container {
             background-color: var(--md-sys-color-surface);
             border-radius: var(--border-radius-xl);
-            padding: 40px;
+            padding: 50px;
             max-width: 900px;
             margin: 0 auto;
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
         .code-block {
-            background-color: #000;
-            padding: 20px;
-            border-radius: 12px;
+            background-color: #0a0a0a;
+            padding: 25px;
+            border-radius: 16px;
             font-family: 'Courier New', monospace;
-            color: #00FF00;
+            color: #A5D6FF;
             overflow-x: auto;
-            margin-top: 20px;
+            margin-top: 25px;
+            border: 1px solid #333;
+            font-size: 0.9rem;
+            line-height: 1.5;
         }
 
         .permission-badge {
             display: inline-block;
-            background-color: rgba(208, 188, 255, 0.1);
+            background-color: rgba(208, 188, 255, 0.08);
             color: var(--md-sys-color-primary);
             padding: 8px 16px;
             border-radius: 20px;
             margin: 5px;
-            font-size: 0.9rem;
-            border: 1px solid var(--md-sys-color-primary);
+            font-size: 0.85rem;
+            border: 1px solid rgba(208, 188, 255, 0.2);
+            transition: background 0.3s;
+        }
+        
+        .permission-badge:hover {
+            background-color: rgba(208, 188, 255, 0.15);
         }
 
         /* --- Developer --- */
         .developer {
             text-align: center;
-            padding: 50px 0;
+            padding: 60px 0;
             background: linear-gradient(to top, var(--md-sys-color-surface-variant), var(--md-sys-color-background));
+            border-top: 1px solid rgba(255,255,255,0.02);
         }
 
         .dev-name {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: var(--md-sys-color-green);
             font-weight: bold;
             text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        
+        .dev-name:hover {
+            opacity: 0.8;
         }
 
         /* --- Animations --- */
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
+            from { opacity: 0; transform: translateY(40px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .reveal {
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(50px);
             transition: all 0.8s ease-out;
         }
 
@@ -303,7 +331,9 @@
         @media (max-width: 768px) {
             .hero h1 { font-size: 2.5rem; }
             .nav-links { display: none; }
-            .gallery-container { justify-content: flex-start; }
+            .blueprint-container { padding: 25px; }
+            .gallery-container { padding: 20px 0; }
+            .app-mockup { height: 500px; width: 230px; }
         }
     </style>
 </head>
@@ -311,18 +341,18 @@
 
     <!-- Header -->
     <header>
-        <div class="logo">
+        <a href="#" class="logo">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
             Music Player Pro
-        </div>
+        </a>
         <nav class="nav-links">
             <a href="#features">Features</a>
-            <a href="#ui">UI</a>
+            <a href="#ui">Interface</a>
             <a href="#blueprint">Blueprint</a>
         </nav>
         <a href="https://github.com/MSI-Sirajul/Music-Player-Pro" target="_blank" class="btn-github">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-            GitHub
+            GitHub Repo
         </a>
     </header>
 
@@ -330,7 +360,7 @@
     <section class="hero">
         <div class="hero-content">
             <h1>The Purest Audio Experience</h1>
-            <p>Native Android Music Player built with Material Design 3. No Libraries. No Ads. Pure Performance.</p>
+            <p>Native Android Music Player built with Material Design 3 aesthetics. No External Libraries. No Ads. Just pure performance.</p>
             <div class="cta-group">
                 <a href="https://github.com/MSI-Sirajul/Music-Player-Pro/releases/latest" class="btn-primary">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
@@ -347,17 +377,17 @@
             <div class="card reveal">
                 <div class="card-icon">⚡</div>
                 <h3>Native Performance</h3>
-                <p>Built without AndroidX or external libraries. Pure Java and XML for ultra-fast, lightweight performance and low RAM usage.</p>
+                <p>Built without AndroidX or external libraries. Pure Java and XML for ultra-fast, lightweight performance and minimal RAM usage.</p>
             </div>
             <div class="card reveal">
                 <div class="card-icon">🎨</div>
                 <h3>Material Design 3</h3>
-                <p>Fully custom XML drawables replicating the modern Material You aesthetic. Dynamic themes (Light/Dark mode) support.</p>
+                <p>Fully custom XML drawables replicating the modern Material You aesthetic. Supports dynamic themes (Light/Dark mode).</p>
             </div>
             <div class="card reveal">
                 <div class="card-icon">📂</div>
-                <h3>Folder Browsing</h3>
-                <p>Advanced file management logic allows you to browse and play music directly from your device folders.</p>
+                <h3>Smart Folder Browsing</h3>
+                <p>Advanced file management logic allows you to browse, search, and play music directly from your device folders seamlessly.</p>
             </div>
             <div class="card reveal">
                 <div class="card-icon">🔒</div>
@@ -367,7 +397,7 @@
             <div class="card reveal">
                 <div class="card-icon">🎧</div>
                 <h3>Pro Controls</h3>
-                <p>Lock screen controls, Headphone unplug auto-pause, Gapless playback logic, and a global Mini Player.</p>
+                <p>Lock screen controls, Headphone unplug auto-pause, Gapless playback logic, and a global Mini Player that persists everywhere.</p>
             </div>
             <div class="card reveal">
                 <div class="card-icon">❤️</div>
@@ -381,32 +411,31 @@
     <section id="ui" class="section">
         <h2 class="section-title reveal">Beautiful User Interface</h2>
         <div class="gallery-container reveal">
-            <!-- Placeholders for Screenshots -->
+            
+            <!-- 1. Main View -->
             <div class="app-mockup">
-                <!-- Replace 'src' with your actual screenshot URLs -->
-                <div style="width:100%; height:100%; background: #2b2930; display:flex; justify-content:center; align-items:center; color: #777;">
-                    Main List View
-                </div>
+                <img src="https://raw.githubusercontent.com/MSI-Sirajul/Music-Player-Pro/refs/heads/main/asset/main.jpg" alt="Main Music List">
             </div>
+
+            <!-- 2. Player Screen -->
             <div class="app-mockup">
-                <div style="width:100%; height:100%; background: #2b2930; display:flex; justify-content:center; align-items:center; color: #777;">
-                    Player Screen
-                </div>
+                <img src="https://raw.githubusercontent.com/MSI-Sirajul/Music-Player-Pro/refs/heads/main/asset/player.jpg" alt="Now Playing Screen">
             </div>
+
+            <!-- 3. Folder View -->
             <div class="app-mockup">
-                <div style="width:100%; height:100%; background: #2b2930; display:flex; justify-content:center; align-items:center; color: #777;">
-                    Notification Panel
-                </div>
+                <img src="https://raw.githubusercontent.com/MSI-Sirajul/Music-Player-Pro/refs/heads/main/asset/folder.jpg" alt="Folder Browsing">
             </div>
+
         </div>
     </section>
 
     <!-- Blueprint Section -->
     <section id="blueprint" class="section">
         <div class="blueprint-container reveal">
-            <h2 style="text-align: center; margin-bottom: 30px;">Project Blueprint</h2>
+            <h2 style="text-align: center; margin-bottom: 30px; font-weight: 500;">Project Blueprint</h2>
             
-            <h3>Required Permissions</h3>
+            <h3 style="color: var(--md-sys-color-secondary);">Required Permissions</h3>
             <div style="margin: 20px 0;">
                 <span class="permission-badge">READ_MEDIA_AUDIO</span>
                 <span class="permission-badge">FOREGROUND_SERVICE</span>
@@ -416,17 +445,17 @@
                 <span class="permission-badge">WRITE_SETTINGS</span>
             </div>
 
-            <h3>Technical Stack</h3>
+            <h3 style="color: var(--md-sys-color-secondary); margin-top: 30px;">Technical Stack</h3>
             <p><strong>Language:</strong> Java</p>
             <p><strong>Minimum SDK:</strong> Android 4.0 (Ice Cream Sandwich)</p>
             <p><strong>Target SDK:</strong> Android 14 (Upside Down Cake)</p>
             <p><strong>Libraries:</strong> None (Pure Native Android SDK & Support v4)</p>
 
             <div class="code-block">
-// Sample: MusicService.java Logic
+// Core Playback Logic: MusicService.java
 public void playSong() {
     player.reset();
-    // Native MediaPlayer implementation
+    // Native MediaPlayer implementation for minimal latency
     try {
         player.setDataSource(playSong.getPath());
         player.prepareAsync();
