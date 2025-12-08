@@ -19,5 +19,20 @@
         <!-- Navigation Bar Color (API 21+) -->
         <item name="android:navigationBarColor">@color/md_theme_background</item>
     </style>
+    
+    <!-- Bottom Dialog Animation Style -->
+    <style name="DialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_in_up</item>
+        <item name="android:windowExitAnimation">@anim/slide_out_down</item>
+    </style>
+
+    <!-- Bottom Dialog Theme -->
+    <style name="BottomDialogTheme" parent="android:Theme.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">false</item> <!-- Full width -->
+        <item name="android:windowAnimationStyle">@style/DialogAnimation</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
 
 </resources>

@@ -5,9 +5,11 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
@@ -22,6 +24,8 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import android.widget.Toast;
 import java.util.ArrayList;
 
@@ -31,17 +35,20 @@ public class MusicService extends Service implements
         MediaPlayer.OnCompletionListener,
         AudioManager.OnAudioFocusChangeListener {
 
-    // Components
+    // Core Components
     private MediaPlayer player;
     private ArrayList<Song> songs;
     private int songPosn;
     private final IBinder musicBind = new MusicBinder();
     private AudioManager audioManager;
     private DatabaseHelper dbHelper;
+    
+    // MediaSession for Lockscreen & Native Controls
     private MediaSessionCompat mediaSession;
     
     // States
     private boolean resumeOnFocusGain = false;
+    private boolean resumeAfterCall = false;
     
     // Repeat Modes
     public static final int REPEAT_ALL = 0;
@@ -71,10 +78,12 @@ public class MusicService extends Service implements
         dbHelper = new DatabaseHelper(this);
         
         initMusicPlayer();
-        initMediaSession();
+        initMediaSession();      // ১. মিডিয়া সেশন সেটআপ (লক স্ক্রিনের জন্য জরুরি)
+        registerNoisyReceiver(); // ২. হেডফোন আনপ্লাগ রিসিভার
+        initCallListener();      // ৩. কল হ্যান্ডলিং
         createNotificationChannel();
     }
-
+    
     private void initMusicPlayer() {
         player.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
         player.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -83,6 +92,7 @@ public class MusicService extends Service implements
         player.setOnErrorListener(this);
     }
 
+  // 1. initMediaSession আপডেট করুন
     private void initMediaSession() {
         mediaSession = new MediaSessionCompat(this, "MusicService");
         mediaSession.setCallback(new MediaSessionCompat.Callback() {
@@ -100,24 +110,106 @@ public class MusicService extends Service implements
                 stopForeground(true); 
             }
             @Override
-            public void onSetRepeatMode(int mode) {
-                toggleRepeat();
+            public void onSetRepeatMode(int mode) { toggleRepeat(); }
+            
+            // --- NEW: Seekbar Listener ---
+            @Override
+            public void onSeekTo(long pos) {
+                seek((int) pos);
             }
         });
+        
         mediaSession.setActive(true);
         mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | 
                               MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
     }
 
+    // 2. updateMediaSessionState আপডেট করুন
+    private void updateMediaSessionState() {
+        if (mediaSession == null) return;
+
+        int state = player.isPlaying() ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED;
+        
+        // --- NEW: ACTION_SEEK_TO যুক্ত করা হয়েছে ---
+        mediaSession.setPlaybackState(new PlaybackStateCompat.Builder()
+                .setState(state, player.getCurrentPosition(), 1.0f)
+                .setActions(PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PAUSE | 
+                            PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
+                            PlaybackStateCompat.ACTION_SEEK_TO | PlaybackStateCompat.ACTION_STOP) // Seek permission added
+                .build());
+
+        Song song = getCurrentSong();
+        if (song != null) {
+            Bitmap art = getAlbumArt(song.getPath());
+            if (art == null) {
+                art = BitmapFactory.decodeResource(getResources(), R.drawable.ic_notification);
+            }
+
+            mediaSession.setMetadata(new MediaMetadataCompat.Builder()
+                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, song.getTitle())
+                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, song.getArtist())
+                    .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, art)
+                    .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, player.getDuration()) // Duration জরুরি
+                    .build());
+        }
+    }
     // ==========================================
-    // ANR FIX & START COMMAND
+    // 2. HEADPHONE UNPLUG LISTENER
+    // ==========================================
+    private final BroadcastReceiver noisyReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (player != null && player.isPlaying()) {
+                pausePlayer(); // হেডফোন খুললে গান পজ হবে
+            }
+        }
+    };
+
+    private void registerNoisyReceiver() {
+        IntentFilter filter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+        registerReceiver(noisyReceiver, filter);
+    }
+
+    // ==========================================
+    // 3. CALL LISTENER (Auto Pause/Resume)
+    // ==========================================
+    private void initCallListener() {
+        try {
+            TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+            tm.listen(new PhoneStateListener() {
+                @Override
+                public void onCallStateChanged(int state, String phoneNumber) {
+                    switch (state) {
+                        case TelephonyManager.CALL_STATE_RINGING:
+                        case TelephonyManager.CALL_STATE_OFFHOOK:
+                            if (player != null && player.isPlaying()) {
+                                pausePlayer();
+                                resumeAfterCall = true; // মনে রাখবে যে গান বাজছিল
+                            }
+                            break;
+                        case TelephonyManager.CALL_STATE_IDLE:
+                            if (resumeAfterCall) {
+                                resumeAfterCall = false;
+                                go(); // কল শেষ হলে আবার বাজবে
+                            }
+                            break;
+                    }
+                }
+            }, PhoneStateListener.LISTEN_CALL_STATE);
+        } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    // ==========================================
+    // SERVICE START & ANR FIX
     // ==========================================
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        // ANR Fix: সার্ভিস চালুর সাথে সাথেই নোটিফিকেশন দেখানো
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForeground(NOTIFICATION_ID, buildNotification(false));
         }
         
+        // হেডসেট বাটন ইভেন্ট হ্যান্ডল
         android.support.v4.media.session.MediaButtonReceiver.handleIntent(mediaSession, intent);
 
         if (intent != null && intent.getAction() != null) {
@@ -139,71 +231,8 @@ public class MusicService extends Service implements
     }
 
     // ==========================================
-    // REPEAT LOGIC
+    // AUDIO FOCUS (Mic/Assistant Logic)
     // ==========================================
-    private void toggleRepeat() {
-        if (repeatMode == REPEAT_ALL) repeatMode = REPEAT_ONE;
-        else if (repeatMode == REPEAT_ONE) repeatMode = REPEAT_OFF;
-        else repeatMode = REPEAT_ALL;
-        
-        updateNotification(isPng()); 
-        updateMediaSessionState();
-        sendUpdateBroadcast(); 
-    }
-    
-    public int getRepeatMode() { return repeatMode; }
-
-    // ==========================================
-    // PLAYBACK CONTROLS
-    // ==========================================
-    public void playSong() {
-        player.reset();
-        resumeOnFocusGain = true; 
-        
-        if (songs != null && songPosn >= 0 && songPosn < songs.size()) {
-            Song playSong = songs.get(songPosn);
-            int result = audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-                try {
-                    player.setDataSource(playSong.getPath());
-                    player.prepareAsync();
-                } catch (Exception e) { e.printStackTrace(); }
-            }
-        } else {
-            songPosn = 0; 
-        }
-    }
-    
-    @Override
-    public void onPrepared(MediaPlayer mp) {
-        mp.start();
-        updateNotification(true); 
-        updateMediaSessionState();
-        sendUpdateBroadcast();
-    }
-    
-    @Override 
-    public void onCompletion(MediaPlayer mp) { 
-        if (player.getCurrentPosition() > 0) { 
-            mp.reset(); 
-            switch (repeatMode) {
-                case REPEAT_ONE: playSong(); break;
-                case REPEAT_ALL: playNext(); break;
-                case REPEAT_OFF:
-                    if (songs != null && songPosn < songs.size() - 1) playNext();
-                    else {
-                        pausePlayer();
-                        seek(0); 
-                        updateNotification(false);
-                        sendUpdateBroadcast();
-                    }
-                    break;
-            }
-        } 
-    }
-    
-    @Override public boolean onError(MediaPlayer mp, int what, int extra) { mp.reset(); return false; }
-    
     @Override
     public void onAudioFocusChange(int focusChange) {
         if (player == null) return;
@@ -212,15 +241,105 @@ public class MusicService extends Service implements
                 if (player.isPlaying()) { pausePlayer(); resumeOnFocusGain = false; }
                 break;
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                if (player.isPlaying()) { player.pause(); updateNotification(false); updateMediaSessionState(); sendUpdateBroadcast(); resumeOnFocusGain = true; }
+                if (player.isPlaying()) { 
+                    player.pause(); 
+                    updateNotification(false); 
+                    updateMediaSessionState();
+                    sendUpdateBroadcast(); 
+                    resumeOnFocusGain = true; 
+                }
                 break;
             case AudioManager.AUDIOFOCUS_GAIN:
-                if (resumeOnFocusGain && !player.isPlaying()) { player.start(); updateNotification(true); updateMediaSessionState(); sendUpdateBroadcast(); }
+                if (resumeOnFocusGain && !player.isPlaying()) { 
+                    player.start(); 
+                    updateNotification(true); 
+                    updateMediaSessionState();
+                    sendUpdateBroadcast(); 
+                }
                 player.setVolume(1.0f, 1.0f);
                 break;
         }
     }
+
+    // ==========================================
+    // PLAYBACK CONTROLS (Final Fix)
+    // ==========================================
+
+    // গান প্লে করার মেথড (ইউজার যখন ক্লিক করবে)
+    public void playSong() {
+        player.reset();
+        resumeOnFocusGain = true; 
+        
+        if (songs != null && songPosn >= 0 && songPosn < songs.size()) {
+            Song playSong = songs.get(songPosn);
+            
+            // Save Last Played Song
+            dbHelper.addHistory(playSong);
+            getSharedPreferences("MusicPrefs", MODE_PRIVATE)
+                .edit()
+                .putLong("last_song_id", playSong.getId())
+                .apply();
+
+            int result = audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                try {
+                    player.setDataSource(playSong.getPath());
+                    player.prepareAsync();
+                } catch (Exception e) { e.printStackTrace(); }
+            }
+        } else { songPosn = 0; }
+    }
+
+    // নতুন মেথড: অ্যাপ ওপেন হলে গান লোড হবে কিন্তু বাজবে না
+    public void prepareCurrent() {
+        player.reset();
+        resumeOnFocusGain = false; // অটো প্লে বন্ধ থাকবে
+        
+        if (songs != null && songPosn >= 0 && songPosn < songs.size()) {
+            Song playSong = songs.get(songPosn);
+            try {
+                player.setDataSource(playSong.getPath());
+                player.prepareAsync(); 
+                // onPrepared কল হবে, সেখান থেকে নোটিফিকেশন আপডেট হবে
+            } catch (Exception e) { e.printStackTrace(); }
+        }
+    }
     
+    @Override
+    public void onPrepared(MediaPlayer mp) {
+        // যদি resumeOnFocusGain সত্য হয় (playSong কল হলে), তবেই গান বাজবে
+        if (resumeOnFocusGain) {
+            mp.start();
+        }
+        
+        // UI এবং Notification আপডেট করা জরুরি, এমনকি গান না বাজলেও
+        updateNotification(mp.isPlaying()); 
+        updateMediaSessionState(); 
+        sendUpdateBroadcast();
+    }
+    
+    @Override 
+    public void onCompletion(MediaPlayer mp) { 
+        if (player.getCurrentPosition() > 0) { 
+            mp.reset(); 
+            // Repeat Logic
+            if (repeatMode == REPEAT_ONE) playSong();
+            else if (repeatMode == REPEAT_ALL) playNext();
+            else { // REPEAT_OFF
+                if (songPosn < songs.size() - 1) playNext();
+                else { 
+                    pausePlayer();
+                    seek(0);
+                    updateNotification(false);
+                    sendUpdateBroadcast();
+                }
+            }
+        } 
+    }
+    
+    @Override public boolean onError(MediaPlayer mp, int what, int extra) { mp.reset(); return false; }
+
+    // Basic Controls
     public void pausePlayer() {
         if(player.isPlaying()) {
             player.pause();
@@ -257,31 +376,32 @@ public class MusicService extends Service implements
     }
     
     // Getters & Setters
-    public Song getCurrentSong() { 
-        if (songs != null && songPosn >= 0 && songPosn < songs.size()) return songs.get(songPosn); 
-        return null; 
-    }
-    
-    // === NEW METHOD FOR QUEUE DIALOG ===
-    public ArrayList<Song> getSongs() {
-        return songs;
-    }
-    // ===================================
-
+    public Song getCurrentSong() { if (songs != null && songPosn >= 0 && songPosn < songs.size()) return songs.get(songPosn); return null; }
+    public ArrayList<Song> getSongs() { return songs; }
     public void setSong(int songIndex) { songPosn = songIndex; }
     public int getPosn() { return player.getCurrentPosition(); }
     public int getDur() { return player.getDuration(); }
     public boolean isPng() { return player.isPlaying(); }
-    
     public int getSongPosn() { return songPosn; } 
     public int getListSize() { return (songs != null) ? songs.size() : 0; } 
-
     public void setList(ArrayList<Song> theSongs) { songs = theSongs; }
+    
     public class MusicBinder extends Binder { MusicService getService() { return MusicService.this; } }
     @Override public IBinder onBind(Intent intent) { return musicBind; }
     @Override public boolean onUnbind(Intent intent) { return true; }
 
     private void sendUpdateBroadcast() { sendBroadcast(new Intent(BROADCAST_ACTION)); }
+
+    // Features
+    private void toggleRepeat() {
+        if (repeatMode == REPEAT_ALL) repeatMode = REPEAT_ONE;
+        else if (repeatMode == REPEAT_ONE) repeatMode = REPEAT_OFF;
+        else repeatMode = REPEAT_ALL;
+        updateNotification(isPng());
+        updateMediaSessionState();
+        sendUpdateBroadcast();
+        // Toast showing is better handled in Activity, Service just updates state
+    }
 
     private void toggleFavorite() {
         Song currentSong = getCurrentSong();
@@ -292,11 +412,11 @@ public class MusicService extends Service implements
             sendUpdateBroadcast();
         }
     }
+    public int getRepeatMode() { return repeatMode; }
 
     // ==========================================
-    // NOTIFICATION
+    // 4. NATIVE NOTIFICATION (MediaStyle)
     // ==========================================
-
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -322,14 +442,14 @@ public class MusicService extends Service implements
         Bitmap art = (song != null) ? getAlbumArt(song.getPath()) : null;
         if (art == null) art = BitmapFactory.decodeResource(getResources(), R.drawable.ic_notification);
 
-        boolean isFav = (song != null) && dbHelper.isFavorite(song.getId());
-
+        // Intent Setup
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         int flags = PendingIntent.FLAG_UPDATE_CURRENT;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) flags |= PendingIntent.FLAG_IMMUTABLE;
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, flags);
 
+        // Notification Builder
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(title)
@@ -341,27 +461,45 @@ public class MusicService extends Service implements
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setPriority(NotificationCompat.PRIORITY_LOW);
 
-        int repeatIcon;
-        if (repeatMode == REPEAT_ONE) repeatIcon = R.drawable.ic_repeat_one;
-        else if (repeatMode == REPEAT_OFF) repeatIcon = R.drawable.ic_repeat_off;
-        else repeatIcon = R.drawable.ic_repeat_all;
-        
-        builder.addAction(repeatIcon, "Repeat", playbackAction(6));
-        builder.addAction(R.drawable.ic_prev, "Prev", playbackAction(3));
+        // --- Action Buttons Logic (Updated) ---
 
-        if (isPlaying) builder.addAction(R.drawable.ic_pause, "Pause", playbackAction(1));
-        else builder.addAction(R.drawable.ic_play, "Play", playbackAction(0));
+        // 1. Repeat Action (Custom Icon: System has no default repeat icon)
+        // Logic Optimized: 3-State Toggle
+        int repeatResId;
+        if (repeatMode == REPEAT_ONE) repeatResId = R.drawable.ic_repeat_one;
+        else if (repeatMode == REPEAT_OFF) repeatResId = R.drawable.ic_repeat_off;
+        else repeatResId = R.drawable.ic_repeat_all;
+        builder.addAction(repeatResId, "Repeat", playbackAction(6));
 
-        builder.addAction(R.drawable.ic_next, "Next", playbackAction(2));
-        builder.addAction(isFav ? R.drawable.ic_heart_filled : R.drawable.ic_heart_empty, "Fav", playbackAction(5));
+        // 2. Previous Action (SYSTEM DEFAULT ICON)
+        builder.addAction(android.R.drawable.ic_media_previous, "Prev", playbackAction(3));
 
+        // 3. Play/Pause Action (SYSTEM DEFAULT ICONS)
+        if (isPlaying) {
+            builder.addAction(android.R.drawable.ic_media_pause, "Pause", playbackAction(1));
+        } else {
+            builder.addAction(android.R.drawable.ic_media_play, "Play", playbackAction(0));
+        }
+
+        // 4. Next Action (SYSTEM DEFAULT ICON)
+        builder.addAction(android.R.drawable.ic_media_next, "Next", playbackAction(2));
+
+        // 5. Favorite Action (Custom Icon: System has no heart icon)
+        // Logic Optimized: Checks DB directly
+        boolean isFav = (song != null) && dbHelper.isFavorite(song.getId());
+        int favResId = isFav ? R.drawable.ic_heart_filled : R.drawable.ic_heart_empty;
+        builder.addAction(favResId, "Fav", playbackAction(5));
+
+        // MediaStyle Applied
         builder.setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()
                 .setMediaSession(mediaSession.getSessionToken())
+                // Compact View: Show Prev(1), Play(2), Next(3)
                 .setShowActionsInCompactView(1, 2, 3)); 
 
         return builder.build();
     }
-
+    
+    /// album image
     private Bitmap getAlbumArt(String path) {
         MediaMetadataRetriever mmr = new MediaMetadataRetriever();
         try {
@@ -383,33 +521,9 @@ public class MusicService extends Service implements
             case 5: playbackAction.setAction(ACTION_FAV); break;
             case 6: playbackAction.setAction(ACTION_REPEAT); break;
         }
-        
         int flags = PendingIntent.FLAG_UPDATE_CURRENT;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) flags |= PendingIntent.FLAG_IMMUTABLE;
         return PendingIntent.getService(this, actionNumber, playbackAction, flags);
-    }
-    
-    private void updateMediaSessionState() {
-        if (mediaSession == null) return;
-        int state = player.isPlaying() ? PlaybackStateCompat.STATE_PLAYING : PlaybackStateCompat.STATE_PAUSED;
-        mediaSession.setPlaybackState(new PlaybackStateCompat.Builder()
-                .setState(state, player.getCurrentPosition(), 1.0f)
-                .setActions(PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PAUSE | 
-                            PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS |
-                            PlaybackStateCompat.ACTION_SEEK_TO | PlaybackStateCompat.ACTION_STOP)
-                .build());
-        
-        Song song = getCurrentSong();
-        if (song != null) {
-            Bitmap art = getAlbumArt(song.getPath());
-            if(art == null) art = BitmapFactory.decodeResource(getResources(), R.drawable.ic_notification);
-            mediaSession.setMetadata(new MediaMetadataCompat.Builder()
-                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, song.getTitle())
-                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, song.getArtist())
-                    .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, art)
-                    .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, player.getDuration())
-                    .build());
-        }
     }
 
     @Override public void onTaskRemoved(Intent rootIntent) { super.onTaskRemoved(rootIntent); }
@@ -417,6 +531,7 @@ public class MusicService extends Service implements
     @Override public void onDestroy() {
         if (player != null) { player.release(); player = null; }
         if (mediaSession != null) { mediaSession.release(); }
+        try { unregisterReceiver(noisyReceiver); } catch (Exception e) {}
         stopForeground(true);
         if (audioManager != null) audioManager.abandonAudioFocus(this);
         super.onDestroy();

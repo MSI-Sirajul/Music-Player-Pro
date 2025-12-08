@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_surface">
+
+    <!-- 1. CENTER CONTENT (Icon + App Name) -->
+    <!-- layout_centerInParent="true" এর কারণে এটি সবসময় স্ক্রিনের ঠিক মাঝখানে থাকবে -->
+    <LinearLayout
+        android:id="@+id/centerContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/splashIcon"
+            android:layout_width="110dp"
+            android:layout_height="110dp"
+            android:src="@drawable/ic_launcher"
+            android:scaleType="fitCenter"/>
+
+        <TextView
+            android:id="@+id/splashText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Music Player Pro"
+            android:textColor="@color/md_theme_onSurface"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:alpha="0"/> <!-- শুরুতে অদৃশ্য (Animation এর জন্য) -->
+
+    </LinearLayout>
+
+    <!-- 2. FOOTER (Design by @MSI-Sirajul) -->
+    <!-- layout_alignParentBottom="true" এর কারণে এটি সবসময় নিচে থাকবে -->
+    <LinearLayout
+        android:id="@+id/splashFooter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="50dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:alpha="0"> <!-- শুরুতে অদৃশ্য -->
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Design by "
+            android:textColor="@color/md_theme_onSurfaceVariant"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@MSI-Sirajul"
+            android:textColor="#4CAF50"
+            android:textStyle="bold"
+            android:textSize="14sp"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

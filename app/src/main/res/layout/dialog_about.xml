@@ -35,12 +35,104 @@
         android:text="Version 1.0.0"
         android:textColor="@color/text_secondary"
         android:textSize="12sp"
-        android:layout_marginTop="2dp"/>
+        android:layout_marginTop="2dp"
+        android:gravity="center"/>
 
-    <!-- Divider -->
+    <!-- NEW: Device Info Section -->
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="#10808080"
+        android:padding="10dp"
+        android:stretchColumns="2"> <!-- Value কলামটি জায়গা নিবে -->
+
+        <!-- Row 1: Brand -->
+        <TableRow>
+            <TextView
+                android:text="Device Brand"
+                android:textColor="@color/md_theme_onSurfaceVariant"
+                android:textSize="12sp"
+                android:gravity="right"
+                android:paddingRight="8dp"/>
+            <TextView
+                android:text=":"
+                android:textColor="@color/md_theme_onSurfaceVariant"
+                android:textSize="12sp"
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/infoBrand"
+                android:text="Loading..."
+                android:textColor="@color/md_theme_onSurface"
+                android:textSize="12sp"
+                android:paddingLeft="8dp"/>
+        </TableRow>
+
+        <!-- Row 2: Model -->
+        <TableRow android:layout_marginTop="4dp">
+            <TextView
+                android:text="Device Model"
+                android:textColor="@color/md_theme_onSurfaceVariant"
+                android:textSize="12sp"
+                android:gravity="right"
+                android:paddingRight="8dp"/>
+            <TextView
+                android:text=":"
+                android:textColor="@color/md_theme_onSurfaceVariant"
+                android:textSize="12sp"
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/infoModel"
+                android:text="Loading..."
+                android:textColor="@color/md_theme_onSurface"
+                android:textSize="12sp"
+                android:paddingLeft="8dp"/>
+        </TableRow>
+        <!-- Row 4: Build ID -->
+        <TableRow android:layout_marginTop="4dp">
+            <TextView
+                android:text="Build Number"
+                android:textColor="@color/md_theme_onSurfaceVariant"
+                android:textSize="12sp"
+                android:gravity="right"
+                android:paddingRight="8dp"/>
+            <TextView
+                android:text=":"
+                android:textColor="@color/md_theme_onSurfaceVariant"
+                android:textSize="12sp"
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/infoBuild"
+                android:text="Loading..."
+                android:textColor="@color/md_theme_onSurface"
+                android:textSize="12sp"
+                android:paddingLeft="8dp"/>
+        </TableRow>        
+        <!-- Row 3: Android Version -->
+        <TableRow android:layout_marginTop="4dp">
+            <TextView
+                android:text="Android Ver"
+                android:textColor="@color/md_theme_onSurfaceVariant"
+                android:textSize="12sp"
+                android:gravity="right"
+                android:paddingRight="8dp"/>
+            <TextView
+                android:text=":"
+                android:textColor="@color/md_theme_onSurfaceVariant"
+                android:textSize="12sp"
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/infoAndroid"
+                android:text="Loading..."
+                android:textColor="@color/md_theme_onSurface"
+                android:textSize="12sp"
+                android:paddingLeft="8dp"/>
+        </TableRow>
+             
+    </TableLayout>
     <View
         android:layout_width="match_parent"
-        android:layout_height="3dp"
+        android:layout_height="1dp"
         android:background="#20808080"
         android:layout_marginVertical="16dp"/>
 
@@ -52,38 +144,35 @@
         android:gravity="center"
         android:paddingTop="4dp">
 
-        <!-- Website -->
         <ImageButton
             android:id="@+id/btnWeb"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:src="@drawable/ic_web"
             android:background="@drawable/bg_button_rounded"
-            android:padding="8dp"
+            android:padding="10dp"
             android:scaleType="fitCenter"
             android:tint="@color/md_theme_onSurface"
             android:layout_marginEnd="16dp"/>
 
-        <!-- Telegram -->
         <ImageButton
             android:id="@+id/btnTelegram"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:src="@drawable/ic_telegram"
             android:background="@drawable/bg_button_rounded"
-            android:padding="8dp"
+            android:padding="10dp"
             android:scaleType="fitCenter"
             android:tint="#0088cc" 
             android:layout_marginEnd="16dp"/>
 
-        <!-- GitHub -->
         <ImageButton
             android:id="@+id/btnGithub"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:src="@drawable/ic_github"
             android:background="@drawable/bg_button_rounded"
-            android:padding="8dp"
+            android:padding="10dp"
             android:scaleType="fitCenter"/>
 
     </LinearLayout>

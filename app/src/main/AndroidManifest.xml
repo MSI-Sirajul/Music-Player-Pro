@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.my.music">
 
-    <!-- Existing Permissions -->
+    <!-- Permissions -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -11,10 +11,8 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    
-    <!-- NEW PERMISSION FOR RINGTONE -->
-    <uses-permission android:name="android.permission.WRITE_SETTINGS"
-        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" tools:ignore="ProtectedPermissions" />
 
     <application
         android:allowBackup="true"
@@ -22,34 +20,69 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
-        android:roundIcon="@drawable/ic_launcher"
+        android:roundIcon="@drawable/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="34">
 
+        <!-- Google Play Services Version (Required for Firebase/Indexing) -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+        <!-- Firebase Analytics Control -->
+        <meta-data
+            android:name="firebase_analytics_collection_enabled"
+            android:value="true" />
+
+        <!-- SplashActivity : Launcher -->
         <activity
-            android:name=".MainActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:name=".SplashActivity"
             android:exported="true"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+        <!-- MainActivity : App Indexing Logic Added Here -->
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait">
+            
+            <!-- App Indexing Intent Filter -->
+            <intent-filter android:autoVerify="false">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <!-- আপনার ওয়েবসাইট হোস্ট -->
+                <data android:host="md-sirajul-islam.vercel.app" />
+            </intent-filter>
+        </activity>
+
+        <!-- PlayerActivity -->
         <activity
             android:name=".PlayerActivity"
             android:exported="false"
-            android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:parentActivityName=".MainActivity">
+        </activity>
 
+        <!-- MusicService -->
         <service
             android:name=".MusicService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="mediaPlayback" />
+            android:foregroundServiceType="mediaPlayback"
+            android:stopWithTask="false" />
 
     </application>
 

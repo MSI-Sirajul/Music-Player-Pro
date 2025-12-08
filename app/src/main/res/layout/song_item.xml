@@ -5,15 +5,27 @@
     android:background="@drawable/item_card_bg"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:padding="4dp"
+    android:padding="8dp"
     android:elevation="1dp">
 
-    <!-- Thumbnail -->
+    <!-- Serial Number -->
+    <TextView
+        android:id="@+id/songSerial"
+        android:layout_width="25dp"
+        android:layout_height="wrap_content"
+        android:text="01"
+        android:textColor="#808080"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginRight="4dp"/> 
+
+    <!-- Thumbnail (Visible in Queue Now) -->
     <ImageView
         android:id="@+id/imgThumbnail"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@drawable/ic_current_play"
+        android:src="@drawable/ic_notification"
         android:scaleType="centerCrop"
         android:background="@drawable/btn_tonal_rounded"
         android:clipToOutline="true"/>
@@ -24,61 +36,76 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:layout_marginLeft="12dp">
+        android:layout_marginLeft="8dp"> <!-- Gap Decreased -->
 
         <TextView
             android:id="@+id/songTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/md_theme_onSurface"
-            android:textSize="15sp"
+            android:textSize="14sp"
             android:textStyle="bold"
             android:singleLine="true"/>
-
-        <!-- Artist & Folder Row -->
+        <!-- Artist, Folder & Meta Info Row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
             
             <TextView
                 android:id="@+id/songArtist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxWidth="150dp"
+                android:maxWidth="120dp" 
                 android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:singleLine="true"/>
+                android:textSize="11sp"
+                android:singleLine="true"
+                android:ellipsize="end"/>
                 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=" • "
+                android:text=" | "
                 android:textColor="@color/text_secondary"
-                android:textSize="12sp"/>
+                android:textSize="11sp"/>
                 
             <TextView
                 android:id="@+id/songFolder"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Folder"
+                android:maxWidth="80dp"
                 android:textColor="@color/text_secondary"
-                android:textSize="12sp"
+                android:textSize="11sp"
                 android:singleLine="true"
                 android:ellipsize="end"/>
+
+            <!-- NEW: Extra Info (Duration, Size, Date) -->
+            <TextView
+                android:id="@+id/songExtraInfo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/text_secondary"
+                android:textSize="10sp"
+                android:singleLine="true"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:layout_marginLeft="4dp"/>
         </LinearLayout>
     </LinearLayout>
 
     <!-- Playing Indicator -->
     <ImageView
         android:id="@+id/playingIndicator"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:src="@drawable/ic_notification"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/ic_play"
         android:visibility="gone"
-        android:padding="6dp"
+        android:padding="5dp"
         android:background="@drawable/bg_playing_indicator" 
         android:tint="@color/md_theme_primary"
-        android:layout_marginLeft="8dp"/>
+        android:layout_marginLeft="6dp"/>
 
 </LinearLayout>

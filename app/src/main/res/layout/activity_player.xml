@@ -63,14 +63,14 @@
     <!-- 2. ALBUM ART -->
     <ImageView
         android:id="@+id/albumArt"
-        android:layout_width="400dp"
-        android:layout_height="350dp"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
         android:layout_below="@id/playerHeader"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
         android:scaleType="centerCrop"
         android:background="@drawable/item_card_bg"
-        android:src="@drawable/ic_notification"
+        android:src="@drawable/ic_launcher"
         android:elevation="12dp"
         android:clipToOutline="true"/>
 
@@ -197,7 +197,7 @@
         android:id="@+id/controlsLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/footerLayout"
+        android:layout_alignParentBottom="true"
         android:layout_marginBottom="15dp"
         android:gravity="center"
         android:orientation="horizontal">
@@ -235,25 +235,6 @@
             android:padding="12dp"
             android:tint="@color/md_theme_primary"
             android:elevation="5dp"/>
-    </LinearLayout>
-
-    <!-- 7. FOOTER TEXT -->
-    <LinearLayout
-        android:id="@+id/footerLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="5dp"
-        android:gravity="center">
-        
-        <!-- Java Code will set the text color specifically for @MSI-Sirajul -->
-        <TextView
-            android:id="@+id/tvFooter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Music Player Pro Design by @MSI-Sirajul"
-            android:textColor="#80FFFFFF"
-            android:textSize="10sp"/>
     </LinearLayout>
 
 </RelativeLayout>

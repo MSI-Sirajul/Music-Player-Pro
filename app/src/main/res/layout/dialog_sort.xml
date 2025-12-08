@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="280dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_menu_popup"
+    android:elevation="10dp"
+    android:orientation="vertical"
+    android:paddingVertical="8dp" >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="12dp"
+        android:text="Arrange Music"
+        android:textColor="@color/md_theme_onSurface"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#20808080" />
+
+    <!-- 1. Name (A-Z) -->
+    <LinearLayout
+        android:id="@+id/sortName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp" >
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_a2z" 
+            android:tint="@color/md_theme_onSurface" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:text="Name (A-Z)"
+            android:textColor="@color/md_theme_onSurface"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- 2. Artist -->
+    <LinearLayout
+        android:id="@+id/sortArtist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp" >
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_artist"
+            android:tint="@color/md_theme_onSurface" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:text="Artist Name"
+            android:textColor="@color/md_theme_onSurface"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- 3. Date Added -->
+    <LinearLayout
+        android:id="@+id/sortDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp" >
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_date"
+            android:tint="@color/md_theme_onSurface" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:text="Date Added (Newest)"
+            android:textColor="@color/md_theme_onSurface"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- 4. Size (Largest) - NEW -->
+    <LinearLayout
+        android:id="@+id/sortSize"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp" >
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_storage" 
+            android:tint="@color/md_theme_onSurface" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:text="Size (Largest)"
+            android:textColor="@color/md_theme_onSurface"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- 5. Duration (Longest) - NEW -->
+    <LinearLayout
+        android:id="@+id/sortDuration"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp" >
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_time"
+            android:tint="@color/md_theme_onSurface" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:text="Duration (Longest)"
+            android:textColor="@color/md_theme_onSurface"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+</LinearLayout>
