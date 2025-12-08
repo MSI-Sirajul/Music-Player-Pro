@@ -3,11 +3,11 @@
 A lightweight, native Android Music Player built purely with Java and XML. No AndroidX, no external libraries—just pure performance inspired by Material Design 3.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/MSI-Sirajul/Music-Player-Pro/refs/heads/main/asset/verify.jpg" width="150" height="50" alt="Main Screen"/>
-  <img src="https://raw.githubusercontent.com/MSI-Sirajul/Music-Player-Pro/refs/heads/main/asset/player.jpg" width="150" height="50" alt="Player Screen"/>
-  <img src="https://raw.githubusercontent.com/MSI-Sirajul/Music-Player-Pro/refs/heads/main/asset/mini_list.jpg" width="150" height="50" alt="Folder Screen"/>
-  <img src="https://raw.githubusercontent.com/MSI-Sirajul/Music-Player-Pro/refs/heads/main/asset/main.jpg" width="150" height="50" alt="Player Screen"/>
-  <img src="https://raw.githubusercontent.com/MSI-Sirajul/Music-Player-Pro/refs/heads/main/asset/folder.jpg" width="150" height="50" alt="Folder Screen"/>
+  <img src="https://raw.githubusercontent.com/MSI-Sirajul/Music-Player-Pro/refs/heads/main/asset/verify.jpg" width="150" height="300" alt="Main Screen"/>
+  <img src="https://raw.githubusercontent.com/MSI-Sirajul/Music-Player-Pro/refs/heads/main/asset/player.jpg" width="150" height="300" alt="Player Screen"/>
+  <img src="https://raw.githubusercontent.com/MSI-Sirajul/Music-Player-Pro/refs/heads/main/asset/mini_list.jpg" width="150" height="300" alt="Folder Screen"/>
+  <img src="https://raw.githubusercontent.com/MSI-Sirajul/Music-Player-Pro/refs/heads/main/asset/main.jpg" width="150" height="300" alt="Player Screen"/>
+  <img src="https://raw.githubusercontent.com/MSI-Sirajul/Music-Player-Pro/refs/heads/main/asset/folder.jpg" width="150" height="300" alt="Folder Screen"/>
 </p>
 
 ##  Key Features
