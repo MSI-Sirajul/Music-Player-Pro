@@ -1,14 +1,24 @@
 # Music Player Pro 
+<div align="center">
+<img src="https://raw.githubusercontent.com/MSI-Sirajul/Music-Player-Pro/refs/heads/main/asset/20251208_063747.png" width="100" height="100" alt="Main Screen"/> </div>
 
-A lightweight, native Android Music Player built purely with Java and XML. No AndroidX, no external libraries—just pure performance inspired by Material Design 3.
+---
 
+<p align="justify">
+A lightweight, native Android Music Player built purely with Java and XML. No AndroidX, no external libraries—just pure performance inspired by Material Design 3.</p>
+
+---
+
+<div align="center">
 <p align="center">
-  <img src="https://raw.githubusercontent.com/MSI-Sirajul/Music-Player-Pro/refs/heads/main/asset/verify.jpg" width="150" height="300" alt="Main Screen"/>
-  <img src="https://raw.githubusercontent.com/MSI-Sirajul/Music-Player-Pro/refs/heads/main/asset/player.jpg" width="150" height="300" alt="Player Screen"/>
-  <img src="https://raw.githubusercontent.com/MSI-Sirajul/Music-Player-Pro/refs/heads/main/asset/mini_list.jpg" width="150" height="300" alt="Folder Screen"/>
-  <img src="https://raw.githubusercontent.com/MSI-Sirajul/Music-Player-Pro/refs/heads/main/asset/main.jpg" width="150" height="300" alt="Player Screen"/>
-  <img src="https://raw.githubusercontent.com/MSI-Sirajul/Music-Player-Pro/refs/heads/main/asset/folder.jpg" width="150" height="300" alt="Folder Screen"/>
-</p>
+  <img src="https://raw.githubusercontent.com/MSI-Sirajul/Music-Player-Pro/refs/heads/main/asset/verify.jpg" width="150" height="325" alt="Main Screen"/>
+  <img src="https://raw.githubusercontent.com/MSI-Sirajul/Music-Player-Pro/refs/heads/main/asset/player.jpg" width="150" height="325" alt="Player Screen"/>
+  <img src="https://raw.githubusercontent.com/MSI-Sirajul/Music-Player-Pro/refs/heads/main/asset/mini_list.jpg" width="150" height="325" alt="Folder Screen"/>
+  <img src="https://raw.githubusercontent.com/MSI-Sirajul/Music-Player-Pro/refs/heads/main/asset/main.jpg" width="150" height="325" alt="Player Screen"/>
+  <img src="https://raw.githubusercontent.com/MSI-Sirajul/Music-Player-Pro/refs/heads/main/asset/folder.jpg" width="150" height="325" alt="Folder Screen"/>
+</p></div>
+
+---
 
 ##  Key Features
 
