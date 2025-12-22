@@ -4,14 +4,14 @@ plugins {
 }
 
 android {
-    compileSdk 31
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.my.music"
         minSdk 22
-        targetSdk 31
+        targetSdk 34
         versionCode 610
-        versionName "21.1.0 Github: MSI-Sirajul"
+        versionName "26.1.0 Github: MSI-Sirajul"
     }
 
     buildTypes {

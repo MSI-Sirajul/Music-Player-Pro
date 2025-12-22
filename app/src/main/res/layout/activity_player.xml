@@ -47,6 +47,7 @@
                 android:textSize="12sp"
                 android:layout_marginTop="2dp"/>
         </LinearLayout>
+		
 
         <ImageButton
             android:id="@+id/btnMenu"
@@ -69,9 +70,9 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
         android:scaleType="centerCrop"
-        android:background="@drawable/item_card_bg"
-        android:src="@drawable/ic_launcher"
-        android:elevation="12dp"
+        android:background="@drawable/btn_tonal_rounded"
+        android:src="@drawable/ic_notification"
+        android:elevation="6dp"
         android:clipToOutline="true"/>
 
     <!-- 3. SONG INFO -->
@@ -211,7 +212,7 @@
             android:scaleType="centerInside"
             android:padding="12dp"
             android:tint="@color/md_theme_primary"
-            android:elevation="5dp"/>
+            android:elevation="1dp"/>
 
         <ImageButton
             android:id="@+id/btnPlay"
@@ -223,7 +224,7 @@
             android:scaleType="centerInside"
             android:padding="18dp"
             android:tint="@color/md_theme_onPrimary"
-            android:elevation="10dp"/>
+            android:elevation="2dp"/>
 
         <ImageButton
             android:id="@+id/btnNext"
@@ -234,7 +235,7 @@
             android:scaleType="centerInside"
             android:padding="12dp"
             android:tint="@color/md_theme_primary"
-            android:elevation="5dp"/>
+            android:elevation="1dp"/>
     </LinearLayout>
 
 </RelativeLayout>

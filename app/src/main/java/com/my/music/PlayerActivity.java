@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -28,6 +29,7 @@ import android.provider.Settings;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -65,9 +67,12 @@ public class PlayerActivity extends Activity implements View.OnClickListener, Se
     private ImageView albumArt;
 
     // Animation & Gestures
-    private ObjectAnimator rotateAnimator; // Album Art Rotation
-    private float x1, x2; // Swipe Detection
-    private static final int MIN_DISTANCE = 150;
+    private ObjectAnimator rotateAnimator;
+    private float initialX;
+    
+    // Intent Handling
+    private boolean isExternalIntent = false;
+    private String externalFilePath = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,20 +121,203 @@ public class PlayerActivity extends Activity implements View.OnClickListener, Se
         
         seekBar.setOnSeekBarChangeListener(this);
         
+        // Handle external intents
+        handleExternalIntent(getIntent());
     }
+
+    // ==========================================
+    // EXTERNAL INTENT HANDLING
+    // ==========================================
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleExternalIntent(intent);
+    }
+
+    private void handleExternalIntent(Intent intent) {
+        String action = intent.getAction();
+        
+        if (Intent.ACTION_VIEW.equals(action) || 
+            Intent.ACTION_GET_CONTENT.equals(action) ||
+            Intent.ACTION_SEND.equals(action)) {
+            
+            Uri uri = intent.getData();
+            if (uri != null) {
+                isExternalIntent = true;
+                externalFilePath = getFilePathFromUri(uri);
+                
+                if (externalFilePath != null) {
+                    // Check if file exists
+                    File file = new File(externalFilePath);
+                    if (file.exists()) {
+                        // Prepare to play the external file
+                        prepareExternalFilePlayback(externalFilePath);
+                    } else {
+                        Toast.makeText(this, "File not found: " + externalFilePath, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        }
+    }
+
+    private String getFilePathFromUri(Uri uri) {
+        String filePath = null;
+        
+        try {
+            String scheme = uri.getScheme();
+            
+            if ("content".equals(scheme)) {
+                // Handle content:// URIs
+                String[] projection = {MediaStore.Audio.Media.DATA};
+                Cursor cursor = null;
+                
+                try {
+                    cursor = getContentResolver().query(uri, projection, null, null, null);
+                    if (cursor != null && cursor.moveToFirst()) {
+                        int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
+                        filePath = cursor.getString(columnIndex);
+                    }
+                } finally {
+                    if (cursor != null) {
+                        cursor.close();
+                    }
+                }
+                
+                // If still null, try another approach
+                if (filePath == null) {
+                    filePath = uri.getPath();
+                }
+                
+            } else if ("file".equals(scheme)) {
+                // Handle file:// URIs
+                filePath = uri.getPath();
+            }
+            
+        } catch (Exception e) {
+            Log.e("PlayerActivity", "Error getting file path from URI", e);
+            filePath = uri.getPath(); // Fallback
+        }
+        
+        return filePath;
+    }
+
+    private void prepareExternalFilePlayback(String filePath) {
+    // Create a Song object from the external file
+    MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+    try {
+        mmr.setDataSource(filePath);
+        
+        String title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+        String artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+        String album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+        
+        if (title == null || title.isEmpty()) {
+            // Extract filename if title is null
+            File file = new File(filePath);
+            title = file.getName();
+            if (title.lastIndexOf('.') > 0) {
+                title = title.substring(0, title.lastIndexOf('.'));
+            }
+        }
+        
+        if (artist == null || artist.isEmpty()) {
+            artist = "Unknown Artist";
+        }
+        
+        if (album == null || album.isEmpty()) {
+            album = "Unknown Album";
+        }
+        
+        // File থেকে তথ্য সংগ্রহ করুন
+        File file = new File(filePath);
+        long fileSize = file.length();
+        long currentTime = System.currentTimeMillis();
+        
+        // Duration সংগ্রহ করুন
+        long duration = 0;
+        try {
+            String durationStr = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+            if (durationStr != null) {
+                duration = Long.parseLong(durationStr);
+            }
+        } catch (Exception e) {
+            duration = 0;
+        }
+        
+        // Album ID এর জন্য (টেম্পোরারি)
+        long albumId = Math.abs(album.hashCode());
+        
+        // Song অবজেক্ট তৈরি করুন
+        currentSong = new Song();
+        currentSong.setId(currentTime); // টেম্পোরারি ID হিসেবে current time ব্যবহার
+        currentSong.setTitle(title);
+        currentSong.setArtist(artist);
+        currentSong.setPath(filePath);
+        currentSong.setAlbumId(albumId);
+        currentSong.setDuration(duration);
+        currentSong.setSize(fileSize);
+        currentSong.setDateAdded(currentTime);
+        currentSong.setAlbum(album);
+        
+        // Update UI immediately
+        updateUIForExternalFile();
+        
+        // If service is bound, play the file
+        if (musicBound && musicSrv != null) {
+            playExternalFile();
+        }
+        
+    } catch (Exception e) {
+        Log.e("PlayerActivity", "Error preparing external file", e);
+        Toast.makeText(this, "Cannot play this file", Toast.LENGTH_SHORT).show();
+    }
+}
+
+    private void updateUIForExternalFile() {
+    if (currentSong != null) {
+        songTitle.setText(currentSong.getTitle());
+        songArtist.setText(currentSong.getArtist());
+        songTitle.setSelected(true);
+        
+        loadAlbumArt(currentSong.getPath());
+        checkFavoriteStatus();
+        
+        // For external files, show appropriate message
+        tvSongCount.setText("External File");
+        
+        // Set total time if duration is available
+        if (currentSong.getDuration() > 0) {
+            tvTotalTime.setText(formatTime((int) currentSong.getDuration()));
+            seekBar.setMax((int) currentSong.getDuration());
+        }
+    }
+}
+
+private void playExternalFile() {
+    if (musicSrv != null && currentSong != null) {
+        // Create a temporary list with just this song
+        ArrayList<Song> tempList = new ArrayList<>();
+        tempList.add(currentSong);
+        
+        // Set the songs list and play
+        musicSrv.setList(tempList);
+        musicSrv.setSong(0);
+        musicSrv.playSong();
+        
+        // Update UI
+        updateUI();
+    }
+}
 
     // ==========================================
     // ALBUM ART ANIMATION & SWIPE
     // ==========================================
     private void initRotationAnimator() {
         rotateAnimator = ObjectAnimator.ofFloat(albumArt, "rotation", 0f, 0f);
-        rotateAnimator.setDuration(0); //  seconds per rotation (Slow & Smooth)
+        rotateAnimator.setDuration(0);
         rotateAnimator.setRepeatCount(ObjectAnimator.INFINITE);
         rotateAnimator.setInterpolator(new LinearInterpolator());
     }
-
-    // ভেরিয়েবল (ক্লাসের উপরে যোগ করুন যদি না থাকে)
-    private float initialX;
 
     private void setupAlbumSwipe() {
         albumArt.setOnTouchListener(new View.OnTouchListener() {
@@ -138,15 +326,12 @@ public class PlayerActivity extends Activity implements View.OnClickListener, Se
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         initialX = event.getRawX();
-                        // রোটেশন এনিমেশন সাময়িক বন্ধ রাখা ভালো সোয়াইপের সময়
                         if(rotateAnimator != null) rotateAnimator.pause(); 
                         return true;
 
                     case MotionEvent.ACTION_MOVE:
-                        // Real-time movement
                         float deltaX = event.getRawX() - initialX;
                         v.setTranslationX(deltaX);
-                        // আলফা কমিয়ে ফেড ইফেক্ট দেওয়া যেতে পারে (অপশনাল)
                         v.setAlpha(1 - Math.abs(deltaX) / (v.getWidth() * 1.5f));
                         return true;
 
@@ -155,7 +340,6 @@ public class PlayerActivity extends Activity implements View.OnClickListener, Se
                         float threshold = v.getWidth() / 3;
 
                         if (Math.abs(moved) > threshold) {
-                            // Complete Swipe
                             float exitX = (moved > 0) ? v.getWidth() + 100 : -(v.getWidth() + 100);
                             v.animate().translationX(exitX).alpha(0).setDuration(200).withEndAction(() -> {
                                 if (musicBound && musicSrv != null) {
@@ -163,13 +347,11 @@ public class PlayerActivity extends Activity implements View.OnClickListener, Se
                                     else musicSrv.playNext();
                                     updateUI();
                                     
-                                    // Reset Position for Next Song Animation
                                     v.setTranslationX(moved > 0 ? -v.getWidth() : v.getWidth());
                                     v.animate().translationX(0).alpha(1).setDuration(300).start();
                                 }
                             }).start();
                         } else {
-                            // Bounce Back (Swipe Cancelled)
                             v.animate().translationX(0).alpha(1).setDuration(200).start();
                             if(musicSrv != null && musicSrv.isPng() && rotateAnimator != null) {
                                 rotateAnimator.resume();
@@ -298,39 +480,31 @@ public class PlayerActivity extends Activity implements View.OnClickListener, Se
             checkRingtonePermission();
         });
     }
+    
     // ==========================================
     // SMART EQUALIZER LOGIC
     // ==========================================
     private void openEqualizer() {
-        int sessionId = 0; // Global Session
+        int sessionId = 0;
         if (musicBound && musicSrv != null) {
-            // যদি সার্ভিসে getAudioSessionId() মেথড থাকে তবে সেটি ব্যবহার করা ভালো, 
-            // না থাকলে 0 (Global) দিয়ে কাজ চলবে।
+            // If service has getAudioSessionId() method, use it
         }
 
         try {
-            // 1. স্ট্যান্ডার্ড অ্যান্ড্রয়েড ইনটেন্ট তৈরি
             Intent intent = new Intent(android.media.audiofx.AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL);
             intent.putExtra(android.media.audiofx.AudioEffect.EXTRA_AUDIO_SESSION, sessionId);
             intent.putExtra(android.media.audiofx.AudioEffect.EXTRA_CONTENT_TYPE, android.media.audiofx.AudioEffect.CONTENT_TYPE_MUSIC);
             intent.putExtra("android.media.extra.PACKAGE_NAME", getPackageName());
 
-            // 2. ব্র্যান্ড অনুযায়ী নির্দিষ্ট প্যাকেজ টার্গেট করা
             String manufacturer = Build.MANUFACTURER.toLowerCase();
 
             if (manufacturer.contains("samsung")) {
-                // Samsung SoundAlive
                 Intent samsungIntent = new Intent(intent);
                 samsungIntent.setPackage("com.sec.android.app.soundalive");
                 try {
                     startActivityForResult(samsungIntent, 0);
-                    return; // সফল হলে এখান থেকেই বের হয়ে যাবে
-                } catch (Exception e) { 
-                    // Samsung এর নির্দিষ্ট প্যাকেজ না পেলে নিচে ডিফল্ট ট্রাই করবে
-                }
-            } else if (manufacturer.contains("xiaomi") || manufacturer.contains("redmi")) {
-                // Xiaomi/HyperOS সাধারণত ডিফল্ট ইনটেন্টেই তাদের 'Mi Sound Enhancer' ওপেন করে
-                // তাই আলাদা প্যাকেজ সেট করার প্রয়োজন নেই, তবে প্রায়োরিটি চেক করা হলো
+                    return;
+                } catch (Exception e) { }
             } else if (manufacturer.contains("sony")) {
                 Intent sonyIntent = new Intent(intent);
                 sonyIntent.setPackage("com.sonyericsson.audioeffect");
@@ -340,12 +514,9 @@ public class PlayerActivity extends Activity implements View.OnClickListener, Se
                 } catch (Exception e) { }
             }
 
-            // 3. যদি নির্দিষ্ট ব্র্যান্ডের অ্যাপ না পাওয়া যায় বা অন্য ফোন হয় (Pixel/Generic)
-            // তাহলে সিস্টেমের ডিফল্ট ইকুয়ালাইজার ওপেন করবে
             startActivityForResult(intent, 0);
 
         } catch (Exception e) {
-            // 4. যদি কোনো ইকুয়ালাইজারই না থাকে
             Toast.makeText(this, "No Equalizer found on this device.", Toast.LENGTH_SHORT).show();
         }
     }
@@ -438,7 +609,6 @@ public class PlayerActivity extends Activity implements View.OnClickListener, Se
                 checkFavoriteStatus();
                 updateRepeatIcon();
                 
-                // Animation Logic
                 if (musicSrv.isPng()) {
                     btnPlay.setImageResource(R.drawable.ic_pause);
                     if (rotateAnimator != null && rotateAnimator.isPaused()) rotateAnimator.resume();
@@ -585,7 +755,14 @@ public class PlayerActivity extends Activity implements View.OnClickListener, Se
             MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
             musicSrv = binder.getService();
             musicBound = true;
-            updateUI();
+            
+            // If there's an external file to play, play it now
+            if (isExternalIntent && externalFilePath != null && currentSong != null) {
+                playExternalFile();
+            } else {
+                updateUI();
+            }
+            
             handler.post(updateTimeTask); 
         }
         @Override public void onServiceDisconnected(ComponentName name) { musicBound = false; }
