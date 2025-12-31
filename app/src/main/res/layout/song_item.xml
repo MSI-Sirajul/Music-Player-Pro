@@ -5,26 +5,26 @@
     android:background="@drawable/item_card_bg"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:padding="8dp"
-    android:elevation="1dp">
+    android:padding="@dimen/_4sdp"
+    android:elevation="@dimen/_1sdp">
 
     <!-- Serial Number -->
     <TextView
         android:id="@+id/songSerial"
-        android:layout_width="25dp"
+        android:layout_width="@dimen/_18sdp"
         android:layout_height="wrap_content"
         android:text="01"
         android:textColor="#808080"
-        android:textSize="12sp"
+        android:textSize="@dimen/_9ssp"
         android:textStyle="bold"
         android:gravity="center"
-        android:layout_marginRight="4dp"/> 
+        android:layout_marginRight="@dimen/_3sdp"/> 
 
     <!-- Thumbnail (Visible in Queue Now) -->
     <ImageView
         android:id="@+id/imgThumbnail"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/_35sdp"
+        android:layout_height="@dimen/_36sdp"
         android:src="@drawable/ic_notification"
         android:scaleType="centerCrop"
         android:background="@drawable/btn_tonal_rounded"
@@ -36,14 +36,14 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:layout_marginLeft="8dp"> <!-- Gap Decreased -->
+        android:layout_marginLeft="@dimen/_4sdp"> 
 
         <TextView
             android:id="@+id/songTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/md_theme_onSurface"
-            android:textSize="14sp"
+            android:textSize="@dimen/_11ssp"
             android:textStyle="bold"
             android:singleLine="true"/>
         <!-- Artist, Folder & Meta Info Row -->
@@ -57,9 +57,9 @@
                 android:id="@+id/songArtist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxWidth="120dp" 
+                android:maxWidth="@dimen/_100sdp" 
                 android:textColor="@color/text_secondary"
-                android:textSize="11sp"
+                android:textSize="@dimen/_8ssp"
                 android:singleLine="true"
                 android:ellipsize="end"/>
                 
@@ -68,16 +68,16 @@
                 android:layout_height="wrap_content"
                 android:text=" | "
                 android:textColor="@color/text_secondary"
-                android:textSize="11sp"/>
+                android:textSize="@dimen/_8ssp"/>
                 
             <TextView
                 android:id="@+id/songFolder"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Folder"
-                android:maxWidth="80dp"
+                android:maxWidth="@dimen/_80sdp"
                 android:textColor="@color/text_secondary"
-                android:textSize="11sp"
+                android:textSize="@dimen/_8ssp"
                 android:singleLine="true"
                 android:ellipsize="end"/>
 
@@ -88,24 +88,24 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textColor="@color/text_secondary"
-                android:textSize="10sp"
+                android:textSize="@dimen/_8ssp"
                 android:singleLine="true"
                 android:ellipsize="marquee"
                 android:marqueeRepeatLimit="marquee_forever"
-                android:layout_marginLeft="4dp"/>
+                android:layout_marginLeft="@dimen/_4sdp"/>
         </LinearLayout>
     </LinearLayout>
 
     <!-- Playing Indicator -->
     <ImageView
         android:id="@+id/playingIndicator"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="@dimen/_25sdp"
+        android:layout_height="@dimen/_25sdp"
         android:src="@drawable/ic_play"
         android:visibility="gone"
-        android:padding="5dp"
+        android:padding="@dimen/_5sdp"
         android:background="@drawable/bg_playing_indicator" 
         android:tint="@color/md_theme_primary"
-        android:layout_marginLeft="6dp"/>
+        android:layout_marginLeft="@dimen/_4sdp"/>
 
 </LinearLayout>

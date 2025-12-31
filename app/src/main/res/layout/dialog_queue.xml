@@ -1,89 +1,96 @@
-<?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content" >
 
     <!-- Main Card Container -->
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="420dp"
+        android:layout_height="@dimen/_300sdp"
         android:layout_gravity="bottom"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="@dimen/_20sdp"
+        android:layout_marginHorizontal="@dimen/_20sdp"
         android:background="@drawable/bg_menu_popup"
-        android:elevation="10dp"
+        android:elevation="@dimen/_8sdp"
         android:orientation="vertical"
-        android:padding="2dp"> <!-- প্যাডিং কমানো হয়েছে -->
+        android:padding="@dimen/_2sdp" > 
 
-        <!-- 1. HEADER (Compact Size: 45dp) -->
+
+        <!-- 1. HEADER -->
+
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:paddingHorizontal="12dp">
+            android:layout_height="@dimen/_35sdp"
+            android:paddingHorizontal="@dimen/_10sdp" >
 
             <!-- Title -->
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
                 android:text="Now Playing Queue"
                 android:textColor="@color/md_theme_onSurface"
-                android:textSize="14sp" 
-                android:textStyle="bold"
-                android:layout_centerInParent="true"/>
+                android:textSize="@dimen/_12ssp"
+                android:textStyle="bold" />
 
             <!-- Scroll Button (Right Side) -->
+
             <ImageButton
                 android:id="@+id/btnScrollToCurrent"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/ic_notification"
-                android:background="@drawable/bg_button_rounded"
-                android:padding="8dp"
-                android:scaleType="fitCenter"
+                android:layout_width="@dimen/_25sdp"
+                android:layout_height="@dimen/_25sdp"
                 android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"/>
+                android:layout_centerVertical="true"
+                android:background="@drawable/bg_button_rounded"
+                android:padding="@dimen/_8sdp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_notification" />
         </RelativeLayout>
 
         <!-- DIVIDER 1 (Below Header) -->
+
         <View
             android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="#20808080"
-            android:layout_marginHorizontal="4dp"/>
+            android:layout_height="@dimen/_2sdp"
+            android:layout_marginHorizontal="@dimen/_4sdp"
+            android:background="#20808080" />
 
-        <!-- 2. SONG LIST (Takes all available space) -->
+        <!-- 2. SONG LIST -->
+
         <ListView
             android:id="@+id/queueListView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:divider="#15808080"
-            android:dividerHeight="1dp"
-            android:paddingHorizontal="4dp"
+            android:dividerHeight="@dimen/_1sdp"
+            android:paddingHorizontal="@dimen/_2sdp"
+            android:scrollbarSize="@dimen/_3sdp"
             android:scrollbarStyle="outsideOverlay"
-            android:scrollbars="vertical"
             android:scrollbarThumbVertical="@drawable/scrollbar_thumb"
-            android:scrollbarSize="3dp"/>
+            android:scrollbars="vertical" />
 
         <!-- DIVIDER 2 (Above Close Button) -->
+
         <View
             android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="#20808080"
-            android:layout_marginHorizontal="4dp"/>
+            android:layout_height="@dimen/_2sdp"
+            android:layout_marginHorizontal="@dimen/_4sdp"
+            android:background="#20808080" />
 
-        <!-- 3. CLOSE BUTTON (Compact Size: 40dp) -->
+        <!-- 3. CLOSE BUTTON -->
+
         <Button
             android:id="@+id/btnCloseQueue"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="@dimen/_35sdp"
+            android:layout_centerInParent="true"
             android:background="@drawable/bg_menu_popup"
             android:text="CLOSE"
             android:textColor="#ff5555"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:layout_centerInParent="true"/>
-
+            android:textSize="@dimen/_12ssp"
+            android:textStyle="bold" />
     </LinearLayout>
 
 </FrameLayout>

@@ -26,26 +26,18 @@ android {
     }
 }
 dependencies {
+    // Core Libraries 
     implementation 'com.android.support:support-media-compat:28.0.0' 
-      // AppCompat v7 (Main UI support)
     implementation 'com.android.support:appcompat-v7:28.0.0'
-
-    // Support v4 (Fragments, NotificationCompat, Media APIs)
     implementation 'com.android.support:support-v4:28.0.0'
-
-    // MediaCompat (MediaSessionCompat + LockScreen control)
-    
-    // RecyclerView (if needed)
     implementation 'com.android.support:recyclerview-v7:28.0.0'
-
-    // CardView (optional)
     implementation 'com.android.support:cardview-v7:28.0.0'
-
-    // Design (Native Support Design Components — NOT Material 3)
     implementation 'com.android.support:design:28.0.0'
-
-    // Annotation library (recommended)
     implementation 'com.android.support:support-annotations:28.0.0'
-    implementation platform('com.google.firebase:firebase-bom:34.6.0')
-    
-}
+    implementation platform('com.google.firebase:firebase-bom:34.6.0')	
+    // SDP-SSP 
+    implementation 'com.intuit.sdp:sdp-android:1.1.0'
+    implementation 'com.intuit.ssp:ssp-android:1.1.0'
+	
+	
+}       

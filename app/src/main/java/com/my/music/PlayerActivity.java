@@ -53,321 +53,323 @@ import java.util.Locale;
 
 public class PlayerActivity extends Activity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
-    // Components
-    private MusicService musicSrv;
-    private boolean musicBound = false;
-    private DatabaseHelper dbHelper;
-    private Song currentSong;
-    private Handler handler = new Handler();
-    
-    // UI Elements
-    private TextView songTitle, songArtist, tvCurrentTime, tvTotalTime, tvSongCount, tvFooter;
-    private ImageButton btnPlay, btnNext, btnPrev, btnFavorite, btnBack, btnMenu, btnRepeat, btnQueue;
-    private SeekBar seekBar;
-    private ImageView albumArt;
+	// Components
+	private MusicService musicSrv;
+	private boolean musicBound = false;
+	private DatabaseHelper dbHelper;
+	private Song currentSong;
+	private Handler handler = new Handler();
 
-    // Animation & Gestures
-    private ObjectAnimator rotateAnimator;
-    private float initialX;
-    
-    // Intent Handling
-    private boolean isExternalIntent = false;
-    private String externalFilePath = null;
+	// UI Elements
+	private TextView songTitle, songArtist, tvCurrentTime, tvTotalTime, tvSongCount, tvFooter;
+	private ImageButton btnPlay, btnNext, btnPrev, btnFavorite, btnBack, btnMenu, btnRepeat, btnQueue;
+	private SeekBar seekBar;
+	private ImageView albumArt;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_player);
+	// Animation & Gestures
+	private ObjectAnimator rotateAnimator;
+	private float initialX;
 
-        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-        StrictMode.setVmPolicy(builder.build());
+	// Intent Handling
+	private boolean isExternalIntent = false;
+	private String externalFilePath = null;
 
-        dbHelper = new DatabaseHelper(this);
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_player);
 
-        // Bind Views
-        songTitle = findViewById(R.id.txtSongName);
-        songArtist = findViewById(R.id.txtArtistName);
-        tvCurrentTime = findViewById(R.id.tvCurrentTime);
-        tvTotalTime = findViewById(R.id.tvTotalTime);
-        tvSongCount = findViewById(R.id.tvSongCount);
-        
-        btnPlay = findViewById(R.id.btnPlay);
-        btnNext = findViewById(R.id.btnNext);
-        btnPrev = findViewById(R.id.btnPrev);
-        btnFavorite = findViewById(R.id.btnFavorite);
-        btnBack = findViewById(R.id.btnBack);
-        btnMenu = findViewById(R.id.btnMenu);
-        btnRepeat = findViewById(R.id.btnRepeat);
-        btnQueue = findViewById(R.id.btnQueue);
-        
-        seekBar = findViewById(R.id.seekBar);
-        albumArt = findViewById(R.id.albumArt);
+		StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+		StrictMode.setVmPolicy(builder.build());
 
-        // Initialize Rotation Animator
-        initRotationAnimator();
-        
-        // Initialize Swipe Listener
-        setupAlbumSwipe();
+		dbHelper = new DatabaseHelper(this);
 
-        // Listeners
-        btnPlay.setOnClickListener(this);
-        btnNext.setOnClickListener(this);
-        btnPrev.setOnClickListener(this);
-        btnFavorite.setOnClickListener(this);
-        btnBack.setOnClickListener(this);
-        btnMenu.setOnClickListener(this);
-        btnRepeat.setOnClickListener(this);
-        btnQueue.setOnClickListener(this);
-        
-        seekBar.setOnSeekBarChangeListener(this);
-        
-        // Handle external intents
-        handleExternalIntent(getIntent());
-    }
+		// Bind Views
+		songTitle = findViewById(R.id.txtSongName);
+		songArtist = findViewById(R.id.txtArtistName);
+		tvCurrentTime = findViewById(R.id.tvCurrentTime);
+		tvTotalTime = findViewById(R.id.tvTotalTime);
+		tvSongCount = findViewById(R.id.tvSongCount);
 
-    // ==========================================
-    // EXTERNAL INTENT HANDLING
-    // ==========================================
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        handleExternalIntent(intent);
-    }
+		btnPlay = findViewById(R.id.btnPlay);
+		btnNext = findViewById(R.id.btnNext);
+		btnPrev = findViewById(R.id.btnPrev);
+		btnFavorite = findViewById(R.id.btnFavorite);
+		btnBack = findViewById(R.id.btnBack);
+		btnMenu = findViewById(R.id.btnMenu);
+		btnRepeat = findViewById(R.id.btnRepeat);
+		btnQueue = findViewById(R.id.btnQueue);
 
-    private void handleExternalIntent(Intent intent) {
-        String action = intent.getAction();
-        
-        if (Intent.ACTION_VIEW.equals(action) || 
-            Intent.ACTION_GET_CONTENT.equals(action) ||
-            Intent.ACTION_SEND.equals(action)) {
-            
-            Uri uri = intent.getData();
-            if (uri != null) {
-                isExternalIntent = true;
-                externalFilePath = getFilePathFromUri(uri);
-                
-                if (externalFilePath != null) {
-                    // Check if file exists
-                    File file = new File(externalFilePath);
-                    if (file.exists()) {
-                        // Prepare to play the external file
-                        prepareExternalFilePlayback(externalFilePath);
-                    } else {
-                        Toast.makeText(this, "File not found: " + externalFilePath, Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        }
-    }
+		seekBar = findViewById(R.id.seekBar);
+		albumArt = findViewById(R.id.albumArt);
 
-    private String getFilePathFromUri(Uri uri) {
-        String filePath = null;
-        
-        try {
-            String scheme = uri.getScheme();
-            
-            if ("content".equals(scheme)) {
-                // Handle content:// URIs
-                String[] projection = {MediaStore.Audio.Media.DATA};
-                Cursor cursor = null;
-                
-                try {
-                    cursor = getContentResolver().query(uri, projection, null, null, null);
-                    if (cursor != null && cursor.moveToFirst()) {
-                        int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
-                        filePath = cursor.getString(columnIndex);
-                    }
-                } finally {
-                    if (cursor != null) {
-                        cursor.close();
-                    }
-                }
-                
-                // If still null, try another approach
-                if (filePath == null) {
-                    filePath = uri.getPath();
-                }
-                
-            } else if ("file".equals(scheme)) {
-                // Handle file:// URIs
-                filePath = uri.getPath();
-            }
-            
-        } catch (Exception e) {
-            Log.e("PlayerActivity", "Error getting file path from URI", e);
-            filePath = uri.getPath(); // Fallback
-        }
-        
-        return filePath;
-    }
+		// Initialize Rotation Animator
+		initRotationAnimator();
 
-    private void prepareExternalFilePlayback(String filePath) {
-    // Create a Song object from the external file
-    MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-    try {
-        mmr.setDataSource(filePath);
-        
-        String title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-        String artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-        String album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-        
-        if (title == null || title.isEmpty()) {
-            // Extract filename if title is null
-            File file = new File(filePath);
-            title = file.getName();
-            if (title.lastIndexOf('.') > 0) {
-                title = title.substring(0, title.lastIndexOf('.'));
-            }
-        }
-        
-        if (artist == null || artist.isEmpty()) {
-            artist = "Unknown Artist";
-        }
-        
-        if (album == null || album.isEmpty()) {
-            album = "Unknown Album";
-        }
-        
-        // File থেকে তথ্য সংগ্রহ করুন
-        File file = new File(filePath);
-        long fileSize = file.length();
-        long currentTime = System.currentTimeMillis();
-        
-        // Duration সংগ্রহ করুন
-        long duration = 0;
-        try {
-            String durationStr = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-            if (durationStr != null) {
-                duration = Long.parseLong(durationStr);
-            }
-        } catch (Exception e) {
-            duration = 0;
-        }
-        
-        // Album ID এর জন্য (টেম্পোরারি)
-        long albumId = Math.abs(album.hashCode());
-        
-        // Song অবজেক্ট তৈরি করুন
-        currentSong = new Song();
-        currentSong.setId(currentTime); // টেম্পোরারি ID হিসেবে current time ব্যবহার
-        currentSong.setTitle(title);
-        currentSong.setArtist(artist);
-        currentSong.setPath(filePath);
-        currentSong.setAlbumId(albumId);
-        currentSong.setDuration(duration);
-        currentSong.setSize(fileSize);
-        currentSong.setDateAdded(currentTime);
-        currentSong.setAlbum(album);
-        
-        // Update UI immediately
-        updateUIForExternalFile();
-        
-        // If service is bound, play the file
-        if (musicBound && musicSrv != null) {
-            playExternalFile();
-        }
-        
-    } catch (Exception e) {
-        Log.e("PlayerActivity", "Error preparing external file", e);
-        Toast.makeText(this, "Cannot play this file", Toast.LENGTH_SHORT).show();
-    }
-}
+		// Initialize Swipe Listener
+		setupAlbumSwipe();
 
-    private void updateUIForExternalFile() {
-    if (currentSong != null) {
-        songTitle.setText(currentSong.getTitle());
-        songArtist.setText(currentSong.getArtist());
-        songTitle.setSelected(true);
-        
-        loadAlbumArt(currentSong.getPath());
-        checkFavoriteStatus();
-        
-        // For external files, show appropriate message
-        tvSongCount.setText("External File");
-        
-        // Set total time if duration is available
-        if (currentSong.getDuration() > 0) {
-            tvTotalTime.setText(formatTime((int) currentSong.getDuration()));
-            seekBar.setMax((int) currentSong.getDuration());
-        }
-    }
-}
+		// Listeners
+		btnPlay.setOnClickListener(this);
+		btnNext.setOnClickListener(this);
+		btnPrev.setOnClickListener(this);
+		btnFavorite.setOnClickListener(this);
+		btnBack.setOnClickListener(this);
+		btnMenu.setOnClickListener(this);
+		btnRepeat.setOnClickListener(this);
+		btnQueue.setOnClickListener(this);
 
-private void playExternalFile() {
-    if (musicSrv != null && currentSong != null) {
-        // Create a temporary list with just this song
-        ArrayList<Song> tempList = new ArrayList<>();
-        tempList.add(currentSong);
-        
-        // Set the songs list and play
-        musicSrv.setList(tempList);
-        musicSrv.setSong(0);
-        musicSrv.playSong();
-        
-        // Update UI
-        updateUI();
-    }
-}
+		seekBar.setOnSeekBarChangeListener(this);
 
-    // ==========================================
-    // ALBUM ART ANIMATION & SWIPE
-    // ==========================================
-    private void initRotationAnimator() {
-        rotateAnimator = ObjectAnimator.ofFloat(albumArt, "rotation", 0f, 0f);
-        rotateAnimator.setDuration(0);
-        rotateAnimator.setRepeatCount(ObjectAnimator.INFINITE);
-        rotateAnimator.setInterpolator(new LinearInterpolator());
-    }
+		// Handle external intents
+		handleExternalIntent(getIntent());
+	}
 
-    private void setupAlbumSwipe() {
-        albumArt.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        initialX = event.getRawX();
-                        if(rotateAnimator != null) rotateAnimator.pause(); 
-                        return true;
+	// ==========================================
+	// EXTERNAL INTENT HANDLING
+	// ==========================================
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		handleExternalIntent(intent);
+	}
 
-                    case MotionEvent.ACTION_MOVE:
-                        float deltaX = event.getRawX() - initialX;
-                        v.setTranslationX(deltaX);
-                        v.setAlpha(1 - Math.abs(deltaX) / (v.getWidth() * 1.5f));
-                        return true;
+	private void handleExternalIntent(Intent intent) {
+		String action = intent.getAction();
 
-                    case MotionEvent.ACTION_UP:
-                        float moved = event.getRawX() - initialX;
-                        float threshold = v.getWidth() / 3;
+		if (Intent.ACTION_VIEW.equals(action) || Intent.ACTION_GET_CONTENT.equals(action)
+				|| Intent.ACTION_SEND.equals(action)) {
 
-                        if (Math.abs(moved) > threshold) {
-                            float exitX = (moved > 0) ? v.getWidth() + 100 : -(v.getWidth() + 100);
-                            v.animate().translationX(exitX).alpha(0).setDuration(200).withEndAction(() -> {
-                                if (musicBound && musicSrv != null) {
-                                    if (moved > 0) musicSrv.playPrev();
-                                    else musicSrv.playNext();
-                                    updateUI();
-                                    
-                                    v.setTranslationX(moved > 0 ? -v.getWidth() : v.getWidth());
-                                    v.animate().translationX(0).alpha(1).setDuration(300).start();
-                                }
-                            }).start();
-                        } else {
-                            v.animate().translationX(0).alpha(1).setDuration(200).start();
-                            if(musicSrv != null && musicSrv.isPng() && rotateAnimator != null) {
-                                rotateAnimator.resume();
-                            }
-                        }
-                        return true;
-                }
-                return false;
-            }
-        });
-    }
+			Uri uri = intent.getData();
+			if (uri != null) {
+				isExternalIntent = true;
+				externalFilePath = getFilePathFromUri(uri);
 
-    // ==========================================
-    // QUEUE DIALOG
-    // ==========================================
-    private void showQueueDialog() {
+				if (externalFilePath != null) {
+					// Check if file exists
+					File file = new File(externalFilePath);
+					if (file.exists()) {
+						// Prepare to play the external file
+						prepareExternalFilePlayback(externalFilePath);
+					} else {
+						Toast.makeText(this, "File not found: " + externalFilePath, Toast.LENGTH_SHORT).show();
+					}
+				}
+			}
+		}
+	}
+
+	private String getFilePathFromUri(Uri uri) {
+		String filePath = null;
+
+		try {
+			String scheme = uri.getScheme();
+
+			if ("content".equals(scheme)) {
+				// Handle content:// URIs
+				String[] projection = { MediaStore.Audio.Media.DATA };
+				Cursor cursor = null;
+
+				try {
+					cursor = getContentResolver().query(uri, projection, null, null, null);
+					if (cursor != null && cursor.moveToFirst()) {
+						int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
+						filePath = cursor.getString(columnIndex);
+					}
+				} finally {
+					if (cursor != null) {
+						cursor.close();
+					}
+				}
+
+				// If still null, try another approach
+				if (filePath == null) {
+					filePath = uri.getPath();
+				}
+
+			} else if ("file".equals(scheme)) {
+				// Handle file:// URIs
+				filePath = uri.getPath();
+			}
+
+		} catch (Exception e) {
+			Log.e("PlayerActivity", "Error getting file path from URI", e);
+			filePath = uri.getPath(); // Fallback
+		}
+
+		return filePath;
+	}
+
+	private void prepareExternalFilePlayback(String filePath) {
+		// Create a Song object from the external file
+		MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+		try {
+			mmr.setDataSource(filePath);
+
+			String title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+			String artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+			String album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+
+			if (title == null || title.isEmpty()) {
+				// Extract filename if title is null
+				File file = new File(filePath);
+				title = file.getName();
+				if (title.lastIndexOf('.') > 0) {
+					title = title.substring(0, title.lastIndexOf('.'));
+				}
+			}
+
+			if (artist == null || artist.isEmpty()) {
+				artist = "Unknown Artist";
+			}
+
+			if (album == null || album.isEmpty()) {
+				album = "Unknown Album";
+			}
+
+			// File থেকে তথ্য সংগ্রহ করুন
+			File file = new File(filePath);
+			long fileSize = file.length();
+			long currentTime = System.currentTimeMillis();
+
+			// Duration সংগ্রহ করুন
+			long duration = 0;
+			try {
+				String durationStr = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+				if (durationStr != null) {
+					duration = Long.parseLong(durationStr);
+				}
+			} catch (Exception e) {
+				duration = 0;
+			}
+
+			// Album ID এর জন্য (টেম্পোরারি)
+			long albumId = Math.abs(album.hashCode());
+
+			// Song অবজেক্ট তৈরি করুন
+			currentSong = new Song();
+			currentSong.setId(currentTime); // টেম্পোরারি ID হিসেবে current time ব্যবহার
+			currentSong.setTitle(title);
+			currentSong.setArtist(artist);
+			currentSong.setPath(filePath);
+			currentSong.setAlbumId(albumId);
+			currentSong.setDuration(duration);
+			currentSong.setSize(fileSize);
+			currentSong.setDateAdded(currentTime);
+			currentSong.setAlbum(album);
+
+			// Update UI immediately
+			updateUIForExternalFile();
+
+			// If service is bound, play the file
+			if (musicBound && musicSrv != null) {
+				playExternalFile();
+			}
+
+		} catch (Exception e) {
+			Log.e("PlayerActivity", "Error preparing external file", e);
+			Toast.makeText(this, "Cannot play this file", Toast.LENGTH_SHORT).show();
+		}
+	}
+
+	private void updateUIForExternalFile() {
+		if (currentSong != null) {
+			songTitle.setText(currentSong.getTitle());
+			songArtist.setText(currentSong.getArtist());
+			songTitle.setSelected(true);
+
+			loadAlbumArt(currentSong.getPath());
+			checkFavoriteStatus();
+
+			// For external files, show appropriate message
+			tvSongCount.setText("External File");
+
+			// Set total time if duration is available
+			if (currentSong.getDuration() > 0) {
+				tvTotalTime.setText(formatTime((int) currentSong.getDuration()));
+				seekBar.setMax((int) currentSong.getDuration());
+			}
+		}
+	}
+
+	private void playExternalFile() {
+		if (musicSrv != null && currentSong != null) {
+			// Create a temporary list with just this song
+			ArrayList<Song> tempList = new ArrayList<>();
+			tempList.add(currentSong);
+
+			// Set the songs list and play
+			musicSrv.setList(tempList);
+			musicSrv.setSong(0);
+			musicSrv.playSong();
+
+			// Update UI
+			updateUI();
+		}
+	}
+
+	// ==========================================
+	// ALBUM ART ANIMATION & SWIPE
+	// ==========================================
+	private void initRotationAnimator() {
+		rotateAnimator = ObjectAnimator.ofFloat(albumArt, "rotation", 0f, 0f);
+		rotateAnimator.setDuration(0);
+		rotateAnimator.setRepeatCount(ObjectAnimator.INFINITE);
+		rotateAnimator.setInterpolator(new LinearInterpolator());
+	}
+
+	private void setupAlbumSwipe() {
+		albumArt.setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				switch (event.getAction()) {
+				case MotionEvent.ACTION_DOWN:
+					initialX = event.getRawX();
+					if (rotateAnimator != null)
+						rotateAnimator.pause();
+					return true;
+
+				case MotionEvent.ACTION_MOVE:
+					float deltaX = event.getRawX() - initialX;
+					v.setTranslationX(deltaX);
+					v.setAlpha(1 - Math.abs(deltaX) / (v.getWidth() * 1.5f));
+					return true;
+
+				case MotionEvent.ACTION_UP:
+					float moved = event.getRawX() - initialX;
+					float threshold = v.getWidth() / 3;
+
+					if (Math.abs(moved) > threshold) {
+						float exitX = (moved > 0) ? v.getWidth() + 100 : -(v.getWidth() + 100);
+						v.animate().translationX(exitX).alpha(0).setDuration(200).withEndAction(() -> {
+							if (musicBound && musicSrv != null) {
+								if (moved > 0)
+									musicSrv.playPrev();
+								else
+									musicSrv.playNext();
+								updateUI();
+
+								v.setTranslationX(moved > 0 ? -v.getWidth() : v.getWidth());
+								v.animate().translationX(0).alpha(1).setDuration(300).start();
+							}
+						}).start();
+					} else {
+						v.animate().translationX(0).alpha(1).setDuration(200).start();
+						if (musicSrv != null && musicSrv.isPng() && rotateAnimator != null) {
+							rotateAnimator.resume();
+						}
+					}
+					return true;
+				}
+				return false;
+			}
+		});
+	}
+
+	// ==========================================
+	// QUEUE DIALOG
+	// ==========================================
+	private void showQueueDialog() {
         if (!musicBound || musicSrv == null) return;
 
         final Dialog dialog = new Dialog(this, R.style.BottomDialogTheme);
@@ -452,345 +454,374 @@ private void playExternalFile() {
         dialog.show();
     }
 
-    // ==========================================
-    // MENU & RINGTONE
-    // ==========================================
-    private void showPlayerMenu() {
-        View menuView = LayoutInflater.from(this).inflate(R.layout.layout_player_menu, null);
-        View btnEq = menuView.findViewById(R.id.actionEqualizer);
-        
-        final PopupWindow popup = new PopupWindow(
-                menuView, 
-                ViewGroup.LayoutParams.WRAP_CONTENT, 
-                ViewGroup.LayoutParams.WRAP_CONTENT, 
-                true
-        );
-        
-        popup.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); 
-        popup.setElevation(20);
-        popup.showAsDropDown(btnMenu, -20, 0);
+	// ==========================================
+	// MENU & RINGTONE
+	// ==========================================
+	private void showPlayerMenu() {
+		View menuView = LayoutInflater.from(this).inflate(R.layout.layout_player_menu, null);
+		View btnEq = menuView.findViewById(R.id.actionEqualizer);
 
-        menuView.findViewById(R.id.actionShare).setOnClickListener(v -> {
-            popup.dismiss();
-            shareSong();
-        });
+		final PopupWindow popup = new PopupWindow(menuView, ViewGroup.LayoutParams.WRAP_CONTENT,
+				ViewGroup.LayoutParams.WRAP_CONTENT, true);
 
-        menuView.findViewById(R.id.actionRingtone).setOnClickListener(v -> {
-            popup.dismiss();
-            checkRingtonePermission();
-        });
-    }
-    
-    // ==========================================
-    // SMART EQUALIZER LOGIC
-    // ==========================================
-    private void openEqualizer() {
-        int sessionId = 0;
-        if (musicBound && musicSrv != null) {
-            // If service has getAudioSessionId() method, use it
-        }
+		popup.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+		popup.setElevation(20);
+		popup.showAsDropDown(btnMenu, -20, 0);
 
-        try {
-            Intent intent = new Intent(android.media.audiofx.AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL);
-            intent.putExtra(android.media.audiofx.AudioEffect.EXTRA_AUDIO_SESSION, sessionId);
-            intent.putExtra(android.media.audiofx.AudioEffect.EXTRA_CONTENT_TYPE, android.media.audiofx.AudioEffect.CONTENT_TYPE_MUSIC);
-            intent.putExtra("android.media.extra.PACKAGE_NAME", getPackageName());
+		menuView.findViewById(R.id.actionShare).setOnClickListener(v -> {
+			popup.dismiss();
+			shareSong();
+		});
 
-            String manufacturer = Build.MANUFACTURER.toLowerCase();
+		menuView.findViewById(R.id.actionRingtone).setOnClickListener(v -> {
+			popup.dismiss();
+			checkRingtonePermission();
+		});
+	}
 
-            if (manufacturer.contains("samsung")) {
-                Intent samsungIntent = new Intent(intent);
-                samsungIntent.setPackage("com.sec.android.app.soundalive");
-                try {
-                    startActivityForResult(samsungIntent, 0);
-                    return;
-                } catch (Exception e) { }
-            } else if (manufacturer.contains("sony")) {
-                Intent sonyIntent = new Intent(intent);
-                sonyIntent.setPackage("com.sonyericsson.audioeffect");
-                try {
-                    startActivityForResult(sonyIntent, 0);
-                    return;
-                } catch (Exception e) { }
-            }
+	// ==========================================
+	// SMART EQUALIZER LOGIC
+	// ==========================================
+	private void openEqualizer() {
+		int sessionId = 0;
+		if (musicBound && musicSrv != null) {
+			// If service has getAudioSessionId() method, use it
+		}
 
-            startActivityForResult(intent, 0);
+		try {
+			Intent intent = new Intent(android.media.audiofx.AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL);
+			intent.putExtra(android.media.audiofx.AudioEffect.EXTRA_AUDIO_SESSION, sessionId);
+			intent.putExtra(android.media.audiofx.AudioEffect.EXTRA_CONTENT_TYPE,
+					android.media.audiofx.AudioEffect.CONTENT_TYPE_MUSIC);
+			intent.putExtra("android.media.extra.PACKAGE_NAME", getPackageName());
 
-        } catch (Exception e) {
-            Toast.makeText(this, "No Equalizer found on this device.", Toast.LENGTH_SHORT).show();
-        }
-    }
+			String manufacturer = Build.MANUFACTURER.toLowerCase();
 
-    private void shareSong() {
-        try {
-            File file = new File(currentSong.getPath());
-            if(file.exists()) {
-                Intent share = new Intent(Intent.ACTION_SEND);
-                share.setType("audio/*");
-                share.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
-                startActivity(Intent.createChooser(share, "Share Audio"));
-            }
-        } catch (Exception e) {
-            Toast.makeText(this, "Cannot share this file", Toast.LENGTH_SHORT).show();
-        }
-    }
+			if (manufacturer.contains("samsung")) {
+				Intent samsungIntent = new Intent(intent);
+				samsungIntent.setPackage("com.sec.android.app.soundalive");
+				try {
+					startActivityForResult(samsungIntent, 0);
+					return;
+				} catch (Exception e) {
+				}
+			} else if (manufacturer.contains("sony")) {
+				Intent sonyIntent = new Intent(intent);
+				sonyIntent.setPackage("com.sonyericsson.audioeffect");
+				try {
+					startActivityForResult(sonyIntent, 0);
+					return;
+				} catch (Exception e) {
+				}
+			}
 
-    private void checkRingtonePermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (Settings.System.canWrite(this)) {
-                setRingtone();
-            } else {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
-                intent.setData(Uri.parse("package:" + getPackageName()));
-                startActivity(intent);
-                Toast.makeText(this, "Allow permission to set Ringtone", Toast.LENGTH_LONG).show();
-            }
-        } else {
-            setRingtone();
-        }
-    }
+			startActivityForResult(intent, 0);
 
-    private void setRingtone() {
-        if (currentSong == null) return;
-        try {
-            File originalFile = new File(currentSong.getPath());
-            if (!originalFile.exists()) return;
+		} catch (Exception e) {
+			Toast.makeText(this, "No Equalizer found on this device.", Toast.LENGTH_SHORT).show();
+		}
+	}
 
-            ContentValues values = new ContentValues();
-            values.put(MediaStore.MediaColumns.DISPLAY_NAME, currentSong.getTitle());
-            values.put(MediaStore.MediaColumns.TITLE, currentSong.getTitle());
-            values.put(MediaStore.MediaColumns.MIME_TYPE, "audio/mpeg"); 
-            values.put(MediaStore.Audio.Media.IS_RINGTONE, true);
-            values.put(MediaStore.Audio.Media.IS_NOTIFICATION, false);
-            values.put(MediaStore.Audio.Media.IS_ALARM, false);
-            values.put(MediaStore.Audio.Media.IS_MUSIC, false);
+	private void shareSong() {
+		try {
+			File file = new File(currentSong.getPath());
+			if (file.exists()) {
+				Intent share = new Intent(Intent.ACTION_SEND);
+				share.setType("audio/*");
+				share.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+				startActivity(Intent.createChooser(share, "Share Audio"));
+			}
+		} catch (Exception e) {
+			Toast.makeText(this, "Cannot share this file", Toast.LENGTH_SHORT).show();
+		}
+	}
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                values.put(MediaStore.MediaColumns.RELATIVE_PATH, "Ringtones/");
-            }
+	private void checkRingtonePermission() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			if (Settings.System.canWrite(this)) {
+				setRingtone();
+			} else {
+				Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
+				intent.setData(Uri.parse("package:" + getPackageName()));
+				startActivity(intent);
+				Toast.makeText(this, "Allow permission to set Ringtone", Toast.LENGTH_LONG).show();
+			}
+		} else {
+			setRingtone();
+		}
+	}
 
-            Uri newUri = getContentResolver().insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values);
+	private void setRingtone() {
+		if (currentSong == null)
+			return;
+		try {
+			File originalFile = new File(currentSong.getPath());
+			if (!originalFile.exists())
+				return;
 
-            if (newUri != null) {
-                java.io.InputStream is = new java.io.FileInputStream(originalFile);
-                java.io.OutputStream os = getContentResolver().openOutputStream(newUri);
-                if (os != null) {
-                    byte[] buffer = new byte[4096];
-                    int len;
-                    while ((len = is.read(buffer)) > 0) os.write(buffer, 0, len);
-                    os.close();
-                    is.close();
-                    RingtoneManager.setActualDefaultRingtoneUri(this, RingtoneManager.TYPE_RINGTONE, newUri);
-                    Toast.makeText(this, "Ringtone set successfully!", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                Toast.makeText(this, "Could not create ringtone entry.", Toast.LENGTH_SHORT).show();
-            }
+			ContentValues values = new ContentValues();
+			values.put(MediaStore.MediaColumns.DISPLAY_NAME, currentSong.getTitle());
+			values.put(MediaStore.MediaColumns.TITLE, currentSong.getTitle());
+			values.put(MediaStore.MediaColumns.MIME_TYPE, "audio/mpeg");
+			values.put(MediaStore.Audio.Media.IS_RINGTONE, true);
+			values.put(MediaStore.Audio.Media.IS_NOTIFICATION, false);
+			values.put(MediaStore.Audio.Media.IS_ALARM, false);
+			values.put(MediaStore.Audio.Media.IS_MUSIC, false);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-    }
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+				values.put(MediaStore.MediaColumns.RELATIVE_PATH, "Ringtones/");
+			}
 
-    // ==========================================
-    // UI UPDATE & ANIMATION LOGIC
-    // ==========================================
-    private void updateUI() {
-        if (musicSrv != null && musicBound) {
-            currentSong = musicSrv.getCurrentSong();
-            
-            if(currentSong != null) {
-                songTitle.setText(currentSong.getTitle());
-                songArtist.setText(currentSong.getArtist());
-                songTitle.setSelected(true); 
-                
-                loadAlbumArt(currentSong.getPath());
-                checkFavoriteStatus();
-                updateRepeatIcon();
-                
-                if (musicSrv.isPng()) {
-                    btnPlay.setImageResource(R.drawable.ic_pause);
-                    if (rotateAnimator != null && rotateAnimator.isPaused()) rotateAnimator.resume();
-                    if (rotateAnimator != null && !rotateAnimator.isStarted()) rotateAnimator.start();
-                } else {
-                    btnPlay.setImageResource(R.drawable.ic_play);
-                    if (rotateAnimator != null) rotateAnimator.pause();
-                }
-                
-                int pos = musicSrv.getSongPosn() + 1;
-                int total = musicSrv.getListSize();
-                tvSongCount.setText(pos + " / " + total);
-                
-                int duration = musicSrv.getDur();
-                seekBar.setMax(duration);
-                tvTotalTime.setText(formatTime(duration));
-            }
-        }
-    }
+			Uri newUri = getContentResolver().insert(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, values);
 
-    private void toggleRepeat() {
-        if (!musicBound) return;
-        Intent intent = new Intent(this, MusicService.class);
-        intent.setAction(MusicService.ACTION_REPEAT);
-        startService(intent);
-    }
+			if (newUri != null) {
+				java.io.InputStream is = new java.io.FileInputStream(originalFile);
+				java.io.OutputStream os = getContentResolver().openOutputStream(newUri);
+				if (os != null) {
+					byte[] buffer = new byte[4096];
+					int len;
+					while ((len = is.read(buffer)) > 0)
+						os.write(buffer, 0, len);
+					os.close();
+					is.close();
+					RingtoneManager.setActualDefaultRingtoneUri(this, RingtoneManager.TYPE_RINGTONE, newUri);
+					Toast.makeText(this, "Ringtone set successfully!", Toast.LENGTH_SHORT).show();
+				}
+			} else {
+				Toast.makeText(this, "Could not create ringtone entry.", Toast.LENGTH_SHORT).show();
+			}
 
-    private void updateRepeatIcon() {
-        if (!musicBound) return;
-        int mode = musicSrv.getRepeatMode();
-        switch (mode) {
-            case MusicService.REPEAT_ALL:
-                btnRepeat.setImageResource(R.drawable.ic_repeat_all);
-                btnRepeat.setAlpha(1.0f);
-                break;
-            case MusicService.REPEAT_ONE:
-                btnRepeat.setImageResource(R.drawable.ic_repeat_one);
-                btnRepeat.setAlpha(1.0f);
-                break;
-            case MusicService.REPEAT_OFF:
-                btnRepeat.setImageResource(R.drawable.ic_repeat_off);
-                btnRepeat.setAlpha(0.5f);
-                break;
-        }
-    }
+		} catch (Exception e) {
+			e.printStackTrace();
+			Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+		}
+	}
 
-    private void toggleFavorite() {
-        if(currentSong == null) return;
-        if(dbHelper.isFavorite(currentSong.getId())) {
-            dbHelper.removeFavorite(currentSong.getId());
-            Toast.makeText(this, "Removed from Favorites", Toast.LENGTH_SHORT).show();
-        } else {
-            dbHelper.addFavorite(currentSong);
-            Toast.makeText(this, "Added to Favorites", Toast.LENGTH_SHORT).show();
-        }
-        checkFavoriteStatus();
-        sendBroadcast(new Intent(MusicService.BROADCAST_ACTION));
-    }
+	// ==========================================
+	// UI UPDATE & ANIMATION LOGIC
+	// ==========================================
+	private void updateUI() {
+		if (musicSrv != null && musicBound) {
+			currentSong = musicSrv.getCurrentSong();
 
-    private void checkFavoriteStatus() {
-        if(currentSong == null) return;
-        boolean isFav = dbHelper.isFavorite(currentSong.getId());
-        btnFavorite.setImageResource(isFav ? R.drawable.ic_heart_filled : R.drawable.ic_heart_empty);
-    }
+			if (currentSong != null) {
+				songTitle.setText(currentSong.getTitle());
+				songArtist.setText(currentSong.getArtist());
+				songTitle.setSelected(true);
 
-    private void loadAlbumArt(String path) {
-        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-        try {
-            mmr.setDataSource(path);
-            byte[] data = mmr.getEmbeddedPicture();
-            if (data != null) {
-                Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                albumArt.setImageBitmap(bitmap);
-            } else {
-                albumArt.setImageResource(R.drawable.ic_notification);
-            }
-        } catch (Exception e) { albumArt.setImageResource(R.drawable.ic_notification); }
-    }
+				loadAlbumArt(currentSong.getPath());
+				checkFavoriteStatus();
+				updateRepeatIcon();
 
-    private String formatTime(int millis) {
-        int seconds = (millis / 1000) % 60;
-        int minutes = (millis / 1000) / 60;
-        return String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
-    }
+				if (musicSrv.isPng()) {
+					btnPlay.setImageResource(R.drawable.ic_pause);
+					if (rotateAnimator != null && rotateAnimator.isPaused())
+						rotateAnimator.resume();
+					if (rotateAnimator != null && !rotateAnimator.isStarted())
+						rotateAnimator.start();
+				} else {
+					btnPlay.setImageResource(R.drawable.ic_play);
+					if (rotateAnimator != null)
+						rotateAnimator.pause();
+				}
 
-    private Runnable updateTimeTask = new Runnable() {
-        @Override
-        public void run() {
-            if (musicSrv != null && musicBound) {
-                if(musicSrv.isPng() || seekBar.getProgress() > 0) {
-                    int currentPos = musicSrv.getPosn();
-                    seekBar.setProgress(currentPos);
-                    tvCurrentTime.setText(formatTime(currentPos));
-                }
-            }
-            handler.postDelayed(this, 1000);
-        }
-    };
+				int pos = musicSrv.getSongPosn() + 1;
+				int total = musicSrv.getListSize();
+				tvSongCount.setText(pos + " / " + total);
 
-    @Override
-    public void onClick(View v) {
-        if (!musicBound) return;
-        int id = v.getId();
-        if (id == R.id.btnPlay) {
-            if (musicSrv.isPng()) musicSrv.pausePlayer();
-            else musicSrv.go();
-        } else if (id == R.id.btnNext) {
-            musicSrv.playNext();
-        } else if (id == R.id.btnPrev) {
-            musicSrv.playPrev();
-        } else if (id == R.id.btnFavorite) {
-            toggleFavorite();
-        } else if (id == R.id.btnRepeat) {
-            toggleRepeat();
-        } else if (id == R.id.btnQueue) {
-            showQueueDialog();
-        } else if (id == R.id.btnMenu) {
-            showPlayerMenu();
-        } else if (id == R.id.btnBack) {
-            onBackPressed();
-        }
-        updateUI();
-    }
+				int duration = musicSrv.getDur();
+				seekBar.setMax(duration);
+				tvTotalTime.setText(formatTime(duration));
+			}
+		}
+	}
 
-    @Override
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        if (musicBound && fromUser) {
-            musicSrv.seek(progress);
-            tvCurrentTime.setText(formatTime(progress));
-        }
-    }
-    @Override public void onStartTrackingTouch(SeekBar seekBar) {}
-    @Override public void onStopTrackingTouch(SeekBar seekBar) {}
-    
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        overridePendingTransition(0, R.anim.slide_out_down);
-    }
+	private void toggleRepeat() {
+		if (!musicBound)
+			return;
+		Intent intent = new Intent(this, MusicService.class);
+		intent.setAction(MusicService.ACTION_REPEAT);
+		startService(intent);
+	}
 
-    private ServiceConnection musicConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
-            musicSrv = binder.getService();
-            musicBound = true;
-            
-            // If there's an external file to play, play it now
-            if (isExternalIntent && externalFilePath != null && currentSong != null) {
-                playExternalFile();
-            } else {
-                updateUI();
-            }
-            
-            handler.post(updateTimeTask); 
-        }
-        @Override public void onServiceDisconnected(ComponentName name) { musicBound = false; }
-    };
+	private void updateRepeatIcon() {
+		if (!musicBound)
+			return;
+		int mode = musicSrv.getRepeatMode();
+		switch (mode) {
+		case MusicService.REPEAT_ALL:
+			btnRepeat.setImageResource(R.drawable.ic_repeat_all);
+			btnRepeat.setAlpha(1.0f);
+			break;
+		case MusicService.REPEAT_ONE:
+			btnRepeat.setImageResource(R.drawable.ic_repeat_one);
+			btnRepeat.setAlpha(1.0f);
+			break;
+		case MusicService.REPEAT_OFF:
+			btnRepeat.setImageResource(R.drawable.ic_repeat_off);
+			btnRepeat.setAlpha(0.5f);
+			break;
+		}
+	}
 
-    private BroadcastReceiver updateReceiver = new BroadcastReceiver() {
-        @Override public void onReceive(Context context, Intent intent) { updateUI(); }
-    };
+	private void toggleFavorite() {
+		if (currentSong == null)
+			return;
+		if (dbHelper.isFavorite(currentSong.getId())) {
+			dbHelper.removeFavorite(currentSong.getId());
+			Toast.makeText(this, "Removed from Favorites", Toast.LENGTH_SHORT).show();
+		} else {
+			dbHelper.addFavorite(currentSong);
+			Toast.makeText(this, "Added to Favorites", Toast.LENGTH_SHORT).show();
+		}
+		checkFavoriteStatus();
+		sendBroadcast(new Intent(MusicService.BROADCAST_ACTION));
+	}
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Intent playIntent = new Intent(this, MusicService.class);
-        bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
-        registerReceiver(updateReceiver, new IntentFilter(MusicService.BROADCAST_ACTION));
-    }
-    
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if(musicBound) updateUI();
-    }
+	private void checkFavoriteStatus() {
+		if (currentSong == null)
+			return;
+		boolean isFav = dbHelper.isFavorite(currentSong.getId());
+		btnFavorite.setImageResource(isFav ? R.drawable.ic_heart_filled : R.drawable.ic_heart_empty);
+	}
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if(musicBound) unbindService(musicConnection);
-        unregisterReceiver(updateReceiver);
-        handler.removeCallbacks(updateTimeTask);
-    }
+	private void loadAlbumArt(String path) {
+		MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+		try {
+			mmr.setDataSource(path);
+			byte[] data = mmr.getEmbeddedPicture();
+			if (data != null) {
+				Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+				albumArt.setImageBitmap(bitmap);
+			} else {
+				albumArt.setImageResource(R.drawable.ic_notification);
+			}
+		} catch (Exception e) {
+			albumArt.setImageResource(R.drawable.ic_notification);
+		}
+	}
+
+	private String formatTime(int millis) {
+		int seconds = (millis / 1000) % 60;
+		int minutes = (millis / 1000) / 60;
+		return String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
+	}
+
+	private Runnable updateTimeTask = new Runnable() {
+		@Override
+		public void run() {
+			if (musicSrv != null && musicBound) {
+				if (musicSrv.isPng() || seekBar.getProgress() > 0) {
+					int currentPos = musicSrv.getPosn();
+					seekBar.setProgress(currentPos);
+					tvCurrentTime.setText(formatTime(currentPos));
+				}
+			}
+			handler.postDelayed(this, 1000);
+		}
+	};
+
+	@Override
+	public void onClick(View v) {
+		if (!musicBound)
+			return;
+		int id = v.getId();
+		if (id == R.id.btnPlay) {
+			if (musicSrv.isPng())
+				musicSrv.pausePlayer();
+			else
+				musicSrv.go();
+		} else if (id == R.id.btnNext) {
+			musicSrv.playNext();
+		} else if (id == R.id.btnPrev) {
+			musicSrv.playPrev();
+		} else if (id == R.id.btnFavorite) {
+			toggleFavorite();
+		} else if (id == R.id.btnRepeat) {
+			toggleRepeat();
+		} else if (id == R.id.btnQueue) {
+			showQueueDialog();
+		} else if (id == R.id.btnMenu) {
+			showPlayerMenu();
+		} else if (id == R.id.btnBack) {
+			onBackPressed();
+		}
+		updateUI();
+	}
+
+	@Override
+	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+		if (musicBound && fromUser) {
+			musicSrv.seek(progress);
+			tvCurrentTime.setText(formatTime(progress));
+		}
+	}
+
+	@Override
+	public void onStartTrackingTouch(SeekBar seekBar) {
+	}
+
+	@Override
+	public void onStopTrackingTouch(SeekBar seekBar) {
+	}
+
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		overridePendingTransition(0, R.anim.slide_out_down);
+	}
+
+	private ServiceConnection musicConnection = new ServiceConnection() {
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder service) {
+			MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
+			musicSrv = binder.getService();
+			musicBound = true;
+
+			// If there's an external file to play, play it now
+			if (isExternalIntent && externalFilePath != null && currentSong != null) {
+				playExternalFile();
+			} else {
+				updateUI();
+			}
+
+			handler.post(updateTimeTask);
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+			musicBound = false;
+		}
+	};
+
+	private BroadcastReceiver updateReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			updateUI();
+		}
+	};
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		Intent playIntent = new Intent(this, MusicService.class);
+		bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
+		registerReceiver(updateReceiver, new IntentFilter(MusicService.BROADCAST_ACTION));
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (musicBound)
+			updateUI();
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		if (musicBound)
+			unbindService(musicConnection);
+		unregisterReceiver(updateReceiver);
+		handler.removeCallbacks(updateTimeTask);
+	}
 }

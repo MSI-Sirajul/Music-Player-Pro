@@ -4,9 +4,9 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/bg_menu_popup"
-    android:paddingVertical="8dp"
+    android:paddingVertical="@dimen/_8sdp"
     android:elevation="8dp"
-    android:minWidth="180dp">
+    android:minWidth="@dimen/_140sdp">
     
     <LinearLayout
         android:id="@+id/actionEqualizer"
@@ -14,14 +14,14 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="12dp"
+        android:paddingHorizontal="@dimen/_14sdp"
+        android:paddingVertical="@dimen/_10sdp"
         android:background="?android:attr/selectableItemBackground"
         android:clickable="true">
 
         <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="@dimen/_16sdp"
+            android:layout_height="@dimen/_16sdp"
             android:src="@drawable/ic_equalizer"
             android:tint="@color/md_theme_onSurface"/>
 
@@ -30,8 +30,8 @@
             android:layout_height="wrap_content"
             android:text="Equalizer"
             android:textColor="@color/md_theme_onSurface"
-            android:textSize="14sp"
-            android:layout_marginLeft="12dp"/>
+            android:textSize="@dimen/_10ssp"
+            android:layout_marginLeft="8dp"/>
     </LinearLayout>
 
     <!-- 1. SHARE SONG -->
@@ -41,14 +41,14 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="12dp"
+        android:paddingHorizontal="@dimen/_14sdp"
+        android:paddingVertical="@dimen/_10sdp"
         android:background="?android:attr/selectableItemBackground"
         android:clickable="true">
 
         <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="@dimen/_16sdp"
+            android:layout_height="@dimen/_16sdp"
             android:src="@drawable/ic_share"
             android:tint="@color/md_theme_onSurface"/>
 
@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:text="Share Song"
             android:textColor="@color/md_theme_onSurface"
-            android:textSize="14sp"
+            android:textSize="@dimen/_10ssp"
             android:layout_marginLeft="12dp"/>
     </LinearLayout>
 
@@ -68,14 +68,14 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="12dp"
+        android:paddingHorizontal="@dimen/_14sdp"
+        android:paddingVertical="@dimen/_10sdp"
         android:background="?android:attr/selectableItemBackground"
         android:clickable="true">
 
         <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
+            android:layout_width="@dimen/_16sdp"
+            android:layout_height="@dimen/_16sdp"
             android:src="@drawable/ic_ringtone"
             android:tint="@color/md_theme_onSurface"/>
 
@@ -84,7 +84,7 @@
             android:layout_height="wrap_content"
             android:text="Set Ringtone"
             android:textColor="@color/md_theme_onSurface"
-            android:textSize="14sp"
+            android:textSize="@dimen/_10ssp"
             android:layout_marginLeft="12dp"/>
     </LinearLayout>
 

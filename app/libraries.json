@@ -40,5 +40,17 @@
     "excludes": [],
     "groupId": "com.android.support",
     "versionName": "28.0.0"
+  },
+  {
+    "artifactId": "sdp-android",
+    "excludes": [],
+    "groupId": "com.intuit.sdp",
+    "versionName": "1.1.0"
+  },
+  {
+    "artifactId": "ssp-android",
+    "excludes": [],
+    "groupId": "com.intuit.ssp",
+    "versionName": "1.1.0"
   }
 ]

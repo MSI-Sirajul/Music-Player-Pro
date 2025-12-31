@@ -4,32 +4,32 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:paddingVertical="4dp"
-    android:paddingHorizontal="8dp"
+    android:paddingVertical="@dimen/_4sdp"
+    android:paddingHorizontal="@dimen/_8sdp"
     android:background="?android:attr/selectableItemBackground">
 
     <!-- 1. Serial Number (Compact) -->
     <TextView
         android:id="@+id/qSerial"
-        android:layout_width="22dp"
+        android:layout_width="@dimen/_18sdp"
         android:layout_height="wrap_content"
         android:text="01"
         android:textColor="#808080"
-        android:textSize="12sp"
+        android:textSize="@dimen/_10ssp"
         android:textStyle="bold"
         android:gravity="center_vertical"
-        android:layout_marginRight="4dp"/>
+        android:layout_marginRight="2dp"/>
 
     <!-- 2. Album Art (Small & Compact) -->
     <ImageView
         android:id="@+id/qArt"
-        android:layout_width="38dp"
-        android:layout_height="38dp"
+        android:layout_width="@dimen/_30sdp"
+        android:layout_height="@dimen/_30sdp"
         android:src="@drawable/ic_notification"
         android:scaleType="centerCrop"
         android:background="@drawable/btn_tonal_rounded"
         android:clipToOutline="true"
-        android:layout_marginRight="8dp"/>
+        android:layout_marginRight="4dp"/>
 
     <!-- 3. Info (Title & Artist) -->
     <LinearLayout
@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             android:text="Song Title"
             android:textColor="@color/md_theme_onSurface"
-            android:textSize="13sp"
+            android:textSize="@dimen/_11ssp"
             android:textStyle="bold"
             android:singleLine="true"
             android:ellipsize="marquee"/>
@@ -56,7 +56,7 @@
             android:layout_height="wrap_content"
             android:text="Artist Name"
             android:textColor="@color/text_secondary"
-            android:textSize="11sp"
+            android:textSize="@dimen/_8ssp"
             android:singleLine="true"
             android:ellipsize="end"
             android:layout_marginTop="-1dp"/> <!-- টেক্সট গ্যাপ কমানোর জন্য -->
@@ -65,13 +65,13 @@
     <!-- 4. Playing Indicator (Right Side) -->
     <ImageView
         android:id="@+id/qPlaying"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
+        android:layout_width="@dimen/_20sdp"
+        android:layout_height="@dimen/_20sdp"
         android:src="@drawable/ic_play"
         android:visibility="gone"
         android:padding="4dp"
         android:background="@drawable/bg_playing_indicator" 
         android:tint="@color/md_theme_primary"
-        android:layout_marginLeft="6dp"/>
+        android:layout_marginLeft="4dp"/>
 
 </LinearLayout>

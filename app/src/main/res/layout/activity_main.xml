@@ -5,28 +5,80 @@
     android:background="@drawable/bg_surface"
     android:animateLayoutChanges="true">
 
-    <!-- Header, Tabs, Search Bar (No Change) -->
-    <RelativeLayout android:id="@+id/headerLayout" android:layout_width="match_parent" android:layout_height="60dp" android:paddingHorizontal="16dp" android:paddingVertical="8dp">
-        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_centerVertical="true" android:layout_alignParentLeft="true" android:layout_toLeftOf="@+id/btnMenu">
-            <FrameLayout android:id="@+id/leftIconContainer" android:layout_width="wrap_content" android:layout_height="wrap_content">
-                <!-- App Icon removed as per previous update, using back button logic in Java -->
-                <ImageButton android:id="@+id/btnBackHeader" android:layout_width="36dp" android:layout_height="36dp" android:src="@drawable/ic_back" android:background="@drawable/bg_button_rounded" android:padding="8dp" android:scaleType="fitCenter" android:visibility="gone" android:tint="@color/md_theme_onSurface"/>
+    <!-- 1. HEADER (Fixed Alignment) -->
+    <RelativeLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_50sdp"
+        android:paddingHorizontal="@dimen/_10sdp"
+        android:paddingVertical="@dimen/_8sdp">
+
+        <!-- Left Container -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/btnMenu">
+
+            <!-- Icon Frame -->
+            <FrameLayout
+                android:id="@+id/leftIconContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                
+                <ImageButton
+                    android:id="@+id/btnBackHeader"
+                    android:layout_width="@dimen/_25sdp"
+                    android:layout_height="@dimen/_25sdp"
+                    android:src="@drawable/ic_back"
+                    android:background="@drawable/bg_button_rounded"
+                    android:padding="@dimen/_5sdp"
+                    android:scaleType="fitCenter"
+                    android:visibility="gone"
+                    android:tint="@color/md_theme_onSurface"/>
             </FrameLayout>
-            <TextView android:id="@+id/tvHeaderTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="12dp" android:text="Music Player Pro" android:textSize="20sp" android:textColor="@color/md_theme_onSurface" android:textStyle="bold" android:singleLine="true" android:ellipsize="end"/>
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/tvHeaderTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_10sdp"
+                android:text="Music Player Pro"
+                android:textSize="@dimen/_16ssp"
+                android:textColor="@color/md_theme_onSurface"
+                android:textStyle="bold"
+                android:singleLine="true"
+                android:ellipsize="end"/>
         </LinearLayout>
-        <ImageButton android:id="@+id/btnMenu" android:layout_width="40dp" android:layout_height="40dp" android:src="@drawable/ic_menu" android:background="@drawable/bg_button_rounded" android:padding="8dp" android:scaleType="fitCenter" android:layout_alignParentRight="true" android:layout_centerVertical="true" android:tint="@color/md_theme_onSurface"/>
+
+        <!-- Menu Button -->
+        <ImageButton
+            android:id="@+id/btnMenu"
+            android:layout_width="@dimen/_25sdp"
+            android:layout_height="@dimen/_25sdp"
+            android:src="@drawable/ic_menu"
+            android:background="@drawable/bg_button_rounded"
+            android:padding="@dimen/_5sdp"
+            android:scaleType="fitCenter"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:tint="@color/md_theme_onSurface"/>
     </RelativeLayout>
 
-    <!-- 2. TABS (Updated for History) -->
+    <!-- 2. TABS -->
     <LinearLayout
         android:id="@+id/tabContainer"
         android:layout_width="match_parent"
-        android:layout_height="45dp"
+        android:layout_height="@dimen/_30sdp"
         android:layout_below="@id/headerLayout"
         android:orientation="horizontal"
-        android:paddingHorizontal="16dp"
-        android:weightSum="4"> <!-- Changed from 3 to 4 -->
-        
+        android:paddingHorizontal="@dimen/_12sdp"
+        android:weightSum="4">
+
         <TextView
             android:id="@+id/tabHistory"
             android:layout_width="0dp"
@@ -34,7 +86,9 @@
             android:layout_weight="1"
             android:text="Recent"
             android:gravity="center"
+            android:textSize="@dimen/_10ssp"
             android:textColor="@color/md_theme_onSurface"
+			android:textStyle="bold"
             android:background="@drawable/tab_selector"
             android:clickable="true"/>
 
@@ -45,6 +99,7 @@
             android:layout_weight="1"
             android:text="All Music"
             android:gravity="center"
+            android:textSize="@dimen/_10ssp"
             android:textColor="@color/md_theme_onSurface"
             android:textStyle="bold"
             android:background="@drawable/tab_selector"
@@ -57,7 +112,9 @@
             android:layout_weight="1"
             android:text="Folders"
             android:gravity="center"
+            android:textSize="@dimen/_10ssp"
             android:textColor="@color/md_theme_onSurface"
+			android:textStyle="bold"
             android:background="@drawable/tab_selector"
             android:clickable="true"/>
 
@@ -68,36 +125,73 @@
             android:layout_weight="1"
             android:text="Favorites"
             android:gravity="center"
+            android:textSize="@dimen/_10ssp"
             android:textColor="@color/md_theme_onSurface"
+			android:textStyle="bold"
             android:background="@drawable/tab_selector"
             android:clickable="true"/>
 
     </LinearLayout>
 
-    <RelativeLayout android:id="@+id/searchContainer" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_below="@id/tabContainer" android:paddingHorizontal="16dp" android:paddingVertical="8dp">
-        <RelativeLayout android:layout_width="match_parent" android:layout_height="45dp" android:background="@drawable/item_card_bg">
-            <ImageView android:id="@+id/searchIconView" android:layout_width="40dp" android:layout_height="40dp" android:src="@drawable/ic_search" android:background="@drawable/bg_menu_popup" android:padding="8dp" android:layout_alignParentRight="true" android:layout_centerVertical="true" android:tint="@color/text_secondary"/>
-            <EditText android:id="@+id/etSearch" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_toLeftOf="@id/searchIconView" android:background="@android:color/transparent" android:paddingHorizontal="12dp" android:hint="Search song or folder..." android:textColor="@color/md_theme_onSurface" android:textColorHint="@color/text_secondary" android:textSize="14sp" android:singleLine="true" android:imeOptions="actionDone"/>
+    <!-- 3. SEARCH BAR -->
+    <RelativeLayout
+        android:id="@+id/searchContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tabContainer"
+        android:paddingHorizontal="@dimen/_10sdp"
+        android:paddingVertical="@dimen/_5sdp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_32sdp"
+            android:background="@drawable/item_card_bg">
+
+            <ImageView
+                android:id="@+id/searchIconView"
+                android:layout_width="@dimen/_30sdp"
+                android:layout_height="@dimen/_30sdp"
+                android:src="@drawable/ic_search"
+                android:background="@drawable/bg_menu_popup"
+                android:padding="@dimen/_5sdp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:tint="@color/text_secondary"/>
+
+            <EditText
+                android:id="@+id/etSearch"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_toLeftOf="@id/searchIconView"
+                android:background="@android:color/transparent"
+                android:paddingHorizontal="@dimen/_10sdp"
+                android:hint="Search song or folder..."
+                android:textColor="@color/md_theme_onSurface"
+                android:textColorHint="@color/text_secondary"
+                android:textSize="@dimen/_10ssp"
+				android:textStyle="italic"
+                android:singleLine="true"
+                android:imeOptions="actionDone"/>
         </RelativeLayout>
     </RelativeLayout>
 
-    <!-- Mini Player (Fixed Alignment) -->
+    <!-- 4. MINI PLAYER -->
     <RelativeLayout 
         android:id="@+id/miniPlayerLayout" 
         android:layout_width="match_parent" 
-        android:layout_height="60dp" 
+        android:layout_height="@dimen/_42sdp" 
         android:layout_alignParentBottom="true" 
         android:background="@drawable/item_card_bg" 
-        android:padding="5dp" 
-        android:layout_margin="6dp" 
-        android:elevation="4dp" 
+        android:padding="@dimen/_4sdp" 
+        android:layout_margin="@dimen/_6sdp" 
+        android:elevation="@dimen/_4sdp" 
         android:visibility="gone" 
         android:clickable="true">
 
         <ImageView 
             android:id="@+id/mini_art" 
-            android:layout_width="45dp" 
-            android:layout_height="45dp" 
+            android:layout_width="@dimen/_32sdp" 
+            android:layout_height="@dimen/_32sdp" 
             android:src="@drawable/ic_music" 
             android:layout_centerVertical="true" 
             android:scaleType="centerCrop" 
@@ -111,7 +205,7 @@
             android:layout_toRightOf="@id/mini_art" 
             android:layout_toLeftOf="@+id/controls_mini" 
             android:layout_centerVertical="true" 
-            android:layout_marginLeft="10dp" 
+            android:layout_marginLeft="@dimen/_6sdp" 
             android:orientation="vertical">
 
             <TextView 
@@ -121,7 +215,7 @@
                 android:text="Song Title" 
                 android:textColor="@color/md_theme_onSurface" 
                 android:textStyle="bold" 
-                android:textSize="13sp" 
+                android:textSize="@dimen/_10ssp" 
                 android:singleLine="true"/>
 
             <TextView 
@@ -130,7 +224,8 @@
                 android:layout_height="wrap_content" 
                 android:text="Artist" 
                 android:textColor="@color/text_secondary" 
-                android:textSize="11sp" 
+				android:textStyle="italic"
+                android:textSize="@dimen/_8ssp" 
                 android:singleLine="true"/>
         </LinearLayout>
 
@@ -143,45 +238,42 @@
             android:orientation="horizontal"
             android:gravity="center_vertical">
             
-            <!-- Previous Button -->
             <ImageButton 
                 android:id="@+id/mini_prev" 
-                android:layout_width="35dp" 
-                android:layout_height="35dp" 
+                android:layout_width="@dimen/_25sdp" 
+                android:layout_height="@dimen/_25sdp" 
                 android:src="@drawable/ic_prev" 
                 android:background="@drawable/bg_round_button" 
-                android:padding="8dp" 
+                android:padding="@dimen/_4sdp" 
                 android:scaleType="fitCenter" 
                 android:tint="@color/md_theme_onSurface"/>
 
-            <!-- Play Button (Margin added for spacing) -->
             <ImageButton 
                 android:id="@+id/mini_play" 
-                android:layout_width="40dp" 
-                android:layout_height="40dp" 
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
+                android:layout_width="@dimen/_30sdp" 
+                android:layout_height="@dimen/_30sdp" 
+                android:layout_marginLeft="@dimen/_8sdp"
+                android:layout_marginRight="@dimen/_8sdp"
                 android:src="@drawable/ic_play" 
                 android:background="@drawable/btn_primary_circle" 
-                android:padding="10dp" 
+                android:padding="@dimen/_5sdp" 
                 android:scaleType="fitCenter" 
                 android:tint="@color/md_theme_onPrimary"/>
 
-            <!-- Next Button -->
             <ImageButton 
                 android:id="@+id/mini_next" 
-                android:layout_width="35dp" 
-                android:layout_height="35dp" 
+                android:layout_width="@dimen/_25sdp" 
+                android:layout_height="@dimen/_25sdp" 
                 android:src="@drawable/ic_next" 
                 android:background="@drawable/bg_round_button" 
-                android:padding="8dp" 
+                android:padding="@dimen/_4sdp" 
                 android:scaleType="fitCenter" 
                 android:tint="@color/md_theme_onSurface"/>
         </LinearLayout>
         
     </RelativeLayout>
 
-    <!-- 5. LIST VIEW (Updated with Scrollbar) -->
+    <!-- 5. LIST VIEW -->
     <ListView
         android:id="@+id/songListView"
         android:layout_width="match_parent"
@@ -189,14 +281,20 @@
         android:layout_below="@id/searchContainer"
         android:layout_above="@id/miniPlayerLayout"
         android:divider="@android:color/transparent"
-        android:dividerHeight="3dp"
-        android:paddingHorizontal="12dp"
+        android:dividerHeight="@dimen/_3sdp"
+        android:paddingHorizontal="@dimen/_4sdp"
         android:clipToPadding="false"
         android:scrollbars="vertical"
         android:scrollbarThumbVertical="@drawable/scrollbar_thumb"
-        android:scrollbarSize="6dp"
+        android:scrollbarSize="@dimen/_4sdp"
         android:scrollbarStyle="outsideOverlay"/>
 
-    <ProgressBar android:id="@+id/progressBar" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_centerInParent="true" android:indeterminate="true" android:visibility="gone"/>
+    <ProgressBar 
+        android:id="@+id/progressBar" 
+        android:layout_width="wrap_content" 
+        android:layout_height="wrap_content" 
+        android:layout_centerInParent="true" 
+        android:indeterminate="true" 
+        android:visibility="gone"/>
 
 </RelativeLayout>

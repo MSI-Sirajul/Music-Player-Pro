@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/md_theme_background"
-    android:padding="20dp">
+    android:padding="@dimen/_16sdp">
 
     <!-- 1. HEADER -->
     <RelativeLayout
@@ -14,11 +14,11 @@
         
         <ImageButton
             android:id="@+id/btnBack"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="@dimen/_25sdp"
+            android:layout_height="@dimen/_25sdp"
             android:src="@drawable/ic_back"
             android:background="@drawable/bg_round_button"
-            android:padding="6dp"
+            android:padding="@dimen/_5sdp"
             android:scaleType="fitCenter"
             android:tint="@color/md_theme_onSurface"
             android:layout_alignParentLeft="true"/>
@@ -35,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:text="Now Playing"
                 android:textColor="@color/md_theme_onSurface"
-                android:textSize="16sp"
+                android:textSize="@dimen/_12ssp"
                 android:textStyle="bold"/>
                 
             <TextView
@@ -44,18 +44,17 @@
                 android:layout_height="wrap_content"
                 android:text="1 / 100"
                 android:textColor="@color/md_theme_onSurfaceVariant"
-                android:textSize="12sp"
-                android:layout_marginTop="2dp"/>
+                android:textSize="@dimen/_10ssp"
+                android:layout_marginTop="@dimen/_2sdp"/>
         </LinearLayout>
 		
-
         <ImageButton
             android:id="@+id/btnMenu"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
+            android:layout_width="@dimen/_25sdp"
+            android:layout_height="@dimen/_25sdp"
             android:src="@drawable/ic_menu"
             android:background="@drawable/bg_round_button"
-            android:padding="6dp"
+            android:padding="@dimen/_5sdp"
             android:scaleType="fitCenter"
             android:tint="@color/md_theme_onSurface"
             android:layout_alignParentRight="true"/>
@@ -64,15 +63,15 @@
     <!-- 2. ALBUM ART -->
     <ImageView
         android:id="@+id/albumArt"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
+        android:layout_width="@dimen/_220sdp"
+        android:layout_height="@dimen/_220sdp"
         android:layout_below="@id/playerHeader"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="@dimen/_25sdp"
         android:scaleType="centerCrop"
-        android:background="@drawable/btn_tonal_rounded"
+        android:background="@drawable/item_card_bg"
         android:src="@drawable/ic_notification"
-        android:elevation="6dp"
+        android:elevation="@dimen/_2sdp"
         android:clipToOutline="true"/>
 
     <!-- 3. SONG INFO -->
@@ -81,7 +80,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/albumArt"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="@dimen/_14sdp"
         android:orientation="vertical"
         android:gravity="center">
 
@@ -92,7 +91,7 @@
             android:gravity="center"
             android:text="Song Title"
             android:textColor="@color/md_theme_onSurface"
-            android:textSize="20sp"
+            android:textSize="@dimen/_14ssp"
             android:textStyle="bold"
             android:singleLine="true"
             android:ellipsize="marquee"
@@ -103,10 +102,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="@dimen/_4sdp"
             android:text="Artist Name"
             android:textColor="@color/md_theme_onSurfaceVariant"
-            android:textSize="14sp"
+			android:textStyle="italic"
+            android:textSize="@dimen/_10ssp"
             android:singleLine="true"/>
     </LinearLayout>
 
@@ -117,41 +117,41 @@
         android:layout_height="wrap_content"
         android:layout_above="@id/seekBarLayout"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="15dp"
+        android:layout_marginBottom="@dimen/_12sdp"
         android:orientation="horizontal"
         android:gravity="center">
 
         <!-- Repeat -->
         <ImageButton
             android:id="@+id/btnRepeat"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="@dimen/_28sdp"
+            android:layout_height="@dimen/_28sdp"
             android:src="@drawable/ic_repeat_all"
             android:background="@drawable/bg_button_rounded"
-            android:padding="8dp"
+            android:padding="@dimen/_5sdp"
             android:scaleType="fitCenter"
             android:tint="@color/md_theme_primary"/>
 
         <!-- List / Queue (New) -->
         <ImageButton
             android:id="@+id/btnQueue"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginHorizontal="20dp"
+            android:layout_width="@dimen/_28sdp"
+            android:layout_height="@dimen/_28sdp"
+            android:layout_marginHorizontal="@dimen/_16sdp"
             android:src="@drawable/ic_list"
             android:background="@drawable/bg_button_rounded"
-            android:padding="8dp"
+            android:padding="@dimen/_5sdp"
             android:scaleType="fitCenter"
             android:tint="@color/md_theme_primary"/>
 
         <!-- Favorite -->
         <ImageButton
             android:id="@+id/btnFavorite"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="@dimen/_28sdp"
+            android:layout_height="@dimen/_28sdp"
             android:src="@drawable/ic_heart_empty"
             android:background="@drawable/bg_button_rounded"
-            android:padding="8dp"
+            android:padding="@dimen/_5sdp"
             android:scaleType="fitCenter"
             android:tint="@color/md_theme_primary"/>
     </LinearLayout>
@@ -162,7 +162,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/controlsLayout"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="@dimen/_16sdp"
         android:orientation="horizontal"
         android:gravity="center_vertical">
 
@@ -172,8 +172,8 @@
             android:layout_height="wrap_content"
             android:text="00:00"
             android:textColor="@color/md_theme_onSurfaceVariant"
-            android:textSize="12sp"
-            android:layout_marginRight="8dp"/>
+            android:textSize="@dimen/_9ssp"
+            android:layout_marginRight="@dimen/_4sdp"/>
 
         <SeekBar
             android:id="@+id/seekBar"
@@ -189,8 +189,8 @@
             android:layout_height="wrap_content"
             android:text="00:00"
             android:textColor="@color/md_theme_onSurfaceVariant"
-            android:textSize="12sp"
-            android:layout_marginLeft="8dp"/>
+            android:textSize="@dimen/_9ssp"
+            android:layout_marginLeft="@dimen/_4sdp"/>
     </LinearLayout>
 
     <!-- 6. CONTROLS (Bottom) -->
@@ -199,43 +199,43 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="15dp"
+        android:layout_marginBottom="@dimen/_12sdp"
         android:gravity="center"
         android:orientation="horizontal">
 
         <ImageButton
             android:id="@+id/btnPrev"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
+            android:layout_width="@dimen/_38sdp"
+            android:layout_height="@dimen/_38sdp"
             android:background="@drawable/bg_button_rounded"
             android:src="@drawable/ic_prev"
             android:scaleType="centerInside"
-            android:padding="12dp"
+            android:padding="@dimen/_8sdp"
             android:tint="@color/md_theme_primary"
-            android:elevation="1dp"/>
+            android:elevation="@dimen/_1sdp"/>
 
         <ImageButton
             android:id="@+id/btnPlay"
-            android:layout_width="75dp"
-            android:layout_height="75dp"
-            android:layout_marginHorizontal="25dp"
+            android:layout_width="@dimen/_50sdp"
+            android:layout_height="@dimen/_50sdp"
+            android:layout_marginHorizontal="@dimen/_20sdp"
             android:background="@drawable/btn_primary_circle"
             android:src="@drawable/ic_play"
             android:scaleType="centerInside"
-            android:padding="18dp"
+            android:padding="@dimen/_12sdp"
             android:tint="@color/md_theme_onPrimary"
-            android:elevation="2dp"/>
+            android:elevation="@dimen/_2sdp"/>
 
         <ImageButton
             android:id="@+id/btnNext"
-            android:layout_width="55dp"
-            android:layout_height="55dp"
+            android:layout_width="@dimen/_38sdp"
+            android:layout_height="@dimen/_38sdp"
             android:background="@drawable/bg_button_rounded"
             android:src="@drawable/ic_next"
             android:scaleType="centerInside"
-            android:padding="12dp"
+            android:padding="@dimen/_8sdp"
             android:tint="@color/md_theme_primary"
-            android:elevation="1dp"/>
+            android:elevation="@dimen/_1sdp"/>
     </LinearLayout>
 
 </RelativeLayout>
